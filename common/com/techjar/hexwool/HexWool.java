@@ -37,15 +37,11 @@ public class HexWool {
 
     @PreInit
     public void preInit(FMLPreInitializationEvent event) {
-        /*
-         * Configuration config = new
-         * Configuration(event.getSuggestedConfigurationFile()); config.load();
-         * idColoredWool = config.getBlock("coloredWool", 3540).getInt();
-         * idWoolColorizer = config.getBlock("woolColorizer", 3541).getInt(); if
-         * (config.hasChanged()) config.save();
-         */
-        idColoredWool = 3540;
-        idWoolColorizer = 3541;
+         Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+         config.load();
+         idColoredWool = config.getBlock("coloredWool", 3540).getInt();
+         idWoolColorizer = config.getBlock("woolColorizer", 3541).getInt();
+         if (config.hasChanged()) config.save();
     }
 
     @Init
