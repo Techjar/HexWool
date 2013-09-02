@@ -1,7 +1,9 @@
 package com.techjar.hexwool.block;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import com.techjar.hexwool.GuiHandler;
 import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.tileentity.TileEntityColoredWool;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
@@ -12,14 +14,18 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 
 public class BlockWoolColorizer extends Block {
+    private final Random random = new Random();
+    
     public BlockWoolColorizer(int id) {
         super(id, Material.iron);
         this.setHardness(1.0F);
@@ -34,10 +40,11 @@ public class BlockWoolColorizer extends Block {
     }
     
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int meta, float par7, float par8, float par9) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
             TileEntity tile = world.getBlockTileEntity(x, y, z);
-            if (tile instanceof TileEntityWoolColorizer && !player.isSneaking()) {
-                player.openGui(HexWool.instance, 0, world, x, y, z);
+            if (tile instanceof TileEntityWoolColorizer) {
+                player.openGui(HexWool.instance, GuiHandler.WOOL_COLORIZER, world, x, y, z);
+                return true;
             }
             return false;
     }
@@ -50,7 +57,46 @@ public class BlockWoolColorizer extends Block {
         return new TileEntityWoolColorizer();
     }
     
-    @Override
+    public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
+        TileEntity tileEntity = par1World.getBlockTileEntity(par2, par3, par4);
+        if (tileEntity instanceof TileEntityWoolColorizer) {
+            TileEntityWoolColorizer tile = (TileEntityWoolColorizer)tileEntity;
+            for (int j1 = 0; j1 < tile.getSizeInventory(); ++j1) {
+                ItemStack itemStack = tile.getStackInSlot(j1);
+
+                if (itemStack != null) {
+                    float f = this.random.nextFloat() * 0.8F + 0.1F;
+                    float f1 = this.random.nextFloat() * 0.8F + 0.1F;
+                    EntityItem entityItem;
+
+                    for (float f2 = this.random.nextFloat() * 0.8F + 0.1F; itemStack.stackSize > 0; par1World.spawnEntityInWorld(entityItem)) {
+                        int k1 = this.random.nextInt(21) + 10;
+
+                        if (k1 > itemStack.stackSize) {
+                            k1 = itemStack.stackSize;
+                        }
+
+                        itemStack.stackSize -= k1;
+                        entityItem = new EntityItem(par1World, (double)((float)par2 + f), (double)((float)par3 + f1), (double)((float)par4 + f2), new ItemStack(itemStack.itemID, k1, itemStack.getItemDamage()));
+                        float f3 = 0.05F;
+                        entityItem.motionX = (double)((float)this.random.nextGaussian() * f3);
+                        entityItem.motionY = (double)((float)this.random.nextGaussian() * f3 + 0.2F);
+                        entityItem.motionZ = (double)((float)this.random.nextGaussian() * f3);
+
+                        if (itemStack.hasTagCompound()) {
+                            entityItem.getEntityItem().setTagCompound((NBTTagCompound)itemStack.getTagCompound().copy());
+                        }
+                    }
+                }
+            }
+
+            par1World.func_96440_m(par2, par3, par4, par5);
+        }
+
+        super.breakBlock(par1World, par2, par3, par4, par5, par6);
+    }
+    
+    /*@Override
     public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int meta, int fortune) {
         ArrayList<ItemStack> drops = super.getBlockDropped(world, x, y, z, meta, fortune);
         
@@ -65,5 +111,5 @@ public class BlockWoolColorizer extends Block {
             }
         }
         return drops;
-    }
+    }*/
 }

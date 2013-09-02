@@ -68,7 +68,6 @@ public class BlockColoredWool extends Block {
     
     public void onBlockHarvested(World world, int x, int y, int z, int meta, EntityPlayer entityPlayer) {
         if (!entityPlayer.capabilities.isCreativeMode) dropBlockAsItem(world, x, y, z, meta, 0);
-        super.onBlockHarvested(world, x, y, z, meta, entityPlayer);
     }
     
     @Override

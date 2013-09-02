@@ -7,17 +7,23 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 public abstract class HexWoolPacket {
     protected Packet250CustomPayload packet;
     
-    public abstract int getPacketId();
-    
-    public void processClient(INetworkManager manager, HexWoolPacket packet, Player player) {
+    public void processClient(INetworkManager network, Player player) {
         throw new UnsupportedOperationException(getClass().getSimpleName() + " does not implement a client side packet handler.");
     }
     
-    public void processServer(INetworkManager manager, HexWoolPacket packet, Player player) {
+    public void processServer(INetworkManager network, Player player) {
         throw new UnsupportedOperationException(getClass().getSimpleName() + " does not implement a server side packet handler.");
     }
     
     public Packet250CustomPayload getPacket() {
         return packet;
+    }
+    
+    public int getPacketId() {
+        return PacketHandler.PacketType.getId(getClass());
+    }
+    
+    public PacketHandler.PacketType getPacketEnum() {
+        return PacketHandler.PacketType.getEnum(getClass());
     }
 }

@@ -22,17 +22,17 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "hexwool", name = "HexWool", version = "0.0.1")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false, clientPacketHandlerSpec=@NetworkMod.SidedPacketHandler(channels={"HexWool"}, packetHandler=PacketHandlerClient.class), serverPacketHandlerSpec=@NetworkMod.SidedPacketHandler(channels={"HexWool"}, packetHandler=PacketHandlerServer.class))
+@Mod(modid = "hexwool", name = "HexWool", version = "0.0.1", dependencies = "required-after:Forge@[7.8.1.738,)")
+@NetworkMod(clientSideRequired = true, serverSideRequired = false, clientPacketHandlerSpec = @NetworkMod.SidedPacketHandler(channels = {"HexWool"}, packetHandler = PacketHandlerClient.class), serverPacketHandlerSpec = @NetworkMod.SidedPacketHandler(channels = {"HexWool"}, packetHandler = PacketHandlerServer.class))
 public class HexWool {
     public static final String networkChannel = "HexWool";
     public static int idColoredWool;
     public static int idWoolColorizer;
 
-    @Instance("HexWool")
+    @Instance("hexwool")
     public static HexWool instance;
 
-    @SidedProxy(clientSide = "com.techjar.hexwool.client.ClientProxy", serverSide = "com.techjar.hexwool.CommonProxy")
+    @SidedProxy(clientSide = "com.techjar.hexwool.ClientProxy", serverSide = "com.techjar.hexwool.CommonProxy")
     public static CommonProxy proxy;
 
     @PreInit
