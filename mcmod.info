@@ -2,7 +2,7 @@
     "modid": "HexWool",
     "name": "HexWool",
     "description": "A mod that adds RGB colored wool using hex codes.",
-    "version": "0.1.0",
+    "version": "@VERSION@",
     "mcversion": "1.5.2",
     "url": "https://github.com/Techjar/HexWool",
     "authors": [ "Techjar" ],
