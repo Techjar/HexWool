@@ -18,7 +18,7 @@ public class ContainerWoolColorizer extends Container {
     public ContainerWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
         tileEntity = tile;
 
-        addSlotToContainer(new Slot(tileEntity, 0, 26, 31));
+        addSlotToContainer(new SlotColorizer(tileEntity, 0, 26, 31));
         bindPlayerInventory(inventoryPlayer);
     }
 

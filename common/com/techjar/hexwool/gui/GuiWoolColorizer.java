@@ -7,6 +7,7 @@ import java.util.List;
 import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.Util;
 import com.techjar.hexwool.container.ContainerWoolColorizer;
+import com.techjar.hexwool.container.SlotColorizer;
 import com.techjar.hexwool.network.packet.PacketGuiAction;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
@@ -33,7 +34,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
 
     public GuiWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
         super(new ContainerWoolColorizer(inventoryPlayer, tile));
-        this.height = 153;
+        this.ySize = 153;
     }
 
     @Override
@@ -44,6 +45,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         colorizeBtn.enabled = false;
         hexField = new GuiTextField(fontRenderer, this.guiLeft + 65, this.guiTop + 17, 95, 20);
         hexField.setMaxStringLength(6);
+        ((SlotColorizer)this.inventorySlots.getSlot(0)).gui = this;
         //this.inventorySlots.removeCraftingFromCrafters(this);
         //this.inventorySlots.addCraftingToCrafters(this);
     }
@@ -70,13 +72,13 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        hexField.drawTextBox();
     }
     
     @Override
     public void drawScreen(int par1, int par2, float par3) {
         super.drawScreen(par1, par2, par3);
         GL11.glDisable(GL11.GL_LIGHTING);
-        hexField.drawTextBox();
     }
     
     @Override
@@ -105,6 +107,16 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         } else {
             this.colorizeBtn.enabled = false;
         }
+    }
+    
+    public void updateState() {
+        ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
+        if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
+            if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound() && this.hexField.getText().trim().isEmpty()) {
+                this.hexField.setText(Util.rgbToHex(itemStack.getTagCompound().getInteger("color")));
+            }
+        }
+        validateColorization();
     }
     
     @Override
