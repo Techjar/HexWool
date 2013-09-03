@@ -7,8 +7,8 @@ import java.io.IOException;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class Util {
-    private static boolean packeting = false;
-    private static ByteArrayOutputStream packetByteStream;
+    //private static boolean packeting = false;
+    //private static ByteArrayOutputStream packetByteStream;
     private static final char[] hexDigits = { '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -23,7 +23,7 @@ public class Util {
         return hexBuilder.toString();
     }
 
-    public static DataOutputStream startPacket(int id) {
+    /*public static DataOutputStream startPacket(int id) {
         if (packeting) throw new IllegalStateException("Already writing a packet");
         packeting = true;
         packetByteStream = new ByteArrayOutputStream();
@@ -38,5 +38,5 @@ public class Util {
         packetByteStream = null;
         packeting = false;
         return packet;
-    }
+    }*/
 }

@@ -19,6 +19,7 @@
 	<target name="prep">
 		<copy todir="${build.dir.development}\forge\mcp\src\minecraft">
 			<fileset dir="${build.dir.development}\source\${build.dir.modproject}\${build.dir.modsrc}\" />
+			<fileset file="${build.dir.development}\source\${build.dir.modproject}\mcmod.info" />
 		</copy>
 	</target>
 
