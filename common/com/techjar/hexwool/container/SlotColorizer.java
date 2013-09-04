@@ -15,7 +15,7 @@ public class SlotColorizer extends Slot {
     public void onSlotChanged() {
         super.onSlotChanged();
         if (gui != null) {
-            gui.updateState();
+            gui.updateSlot();
         }
     }
 }

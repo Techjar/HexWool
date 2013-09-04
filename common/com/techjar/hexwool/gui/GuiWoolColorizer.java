@@ -46,8 +46,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         hexField = new GuiTextField(fontRenderer, this.guiLeft + 65, this.guiTop + 17, 95, 20);
         hexField.setMaxStringLength(6);
         ((SlotColorizer)this.inventorySlots.getSlot(0)).gui = this;
-        //this.inventorySlots.removeCraftingFromCrafters(this);
-        //this.inventorySlots.addCraftingToCrafters(this);
+        updateSlot();
     }
     
     @Override
@@ -109,7 +108,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         }
     }
     
-    public void updateState() {
+    public void updateSlot() {
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
         if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
             if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound() && this.hexField.getText().trim().isEmpty()) {
