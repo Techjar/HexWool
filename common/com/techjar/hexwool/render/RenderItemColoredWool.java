@@ -13,14 +13,17 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 public class RenderItemColoredWool implements IItemRenderer {
+	@Override
     public boolean handleRenderType(ItemStack itemStack, ItemRenderType type) {
         return type != ItemRenderType.FIRST_PERSON_MAP;
     }
 
+    @Override
     public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack itemStack, ItemRendererHelper helper) {
         return true;
     }
 
+    @Override
     public void renderItem(ItemRenderType type, ItemStack itemStack, Object... data) {
         RenderBlocks renderer = (RenderBlocks)data[0];
         int color = itemStack.hasTagCompound() ? itemStack.getTagCompound().getInteger("color") : 0xFFFFFF;

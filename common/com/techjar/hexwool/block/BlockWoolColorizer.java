@@ -34,6 +34,7 @@ public class BlockWoolColorizer extends Block {
         this.setUnlocalizedName("hexwool.block.woolColorizer");
     }
     
+    @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister iconRegister) {
         this.blockIcon = iconRegister.registerIcon("hexwool:woolColorizer");
@@ -49,14 +50,17 @@ public class BlockWoolColorizer extends Block {
             return false;
     }
     
+    @Override
     public boolean hasTileEntity(int meta) {
         return true;
     }
     
+    @Override
     public TileEntity createTileEntity(World world, int meta) {
         return new TileEntityWoolColorizer();
     }
     
+    @Override
     public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
         TileEntity tileEntity = par1World.getBlockTileEntity(par2, par3, par4);
         if (tileEntity instanceof TileEntityWoolColorizer) {

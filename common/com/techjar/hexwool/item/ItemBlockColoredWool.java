@@ -17,6 +17,7 @@ public class ItemBlockColoredWool extends ItemBlock {
         //this.setUnlocalizedName("hexwool.block.coloredWool");
     }
     
+    @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean par4) {
         if (itemStack.hasTagCompound()) {

@@ -12,7 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,6 +35,7 @@ public class BlockColoredWool extends Block {
         this.setUnlocalizedName("hexwool.block.coloredWool");
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public int colorMultiplier(IBlockAccess blockAccess, int x, int y, int z) {
         TileEntity tile = blockAccess.getBlockTileEntity(x, y, z);
@@ -44,9 +45,10 @@ public class BlockColoredWool extends Block {
         return 0xFFFFFF;
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister iconRegister) {
-        this.blockIcon = iconRegister.registerIcon("cloth_0");
+        this.blockIcon = iconRegister.registerIcon("minecraft:wool_colored_white");
     }
     
     /*@SideOnly(Side.CLIENT)
@@ -54,6 +56,7 @@ public class BlockColoredWool extends Block {
         return mostRecentColor;
     }*/
     
+    @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
     {
         ItemStack itemStack = super.getPickBlock(target, world, x, y, z);
@@ -66,6 +69,7 @@ public class BlockColoredWool extends Block {
         return itemStack;
     }
     
+    @Override
     public void onBlockHarvested(World world, int x, int y, int z, int meta, EntityPlayer entityPlayer) {
         if (!entityPlayer.capabilities.isCreativeMode) dropBlockAsItem(world, x, y, z, meta, 0);
     }
@@ -84,15 +88,18 @@ public class BlockColoredWool extends Block {
         return drops;
     }
     
+    @Override
     public boolean hasTileEntity(int meta) {
         return true;
     }
     
+    @Override
     public TileEntity createTileEntity(World world, int meta) {
         return new TileEntityColoredWool();
     }
 
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLiving entityLiving, ItemStack itemStack) {
+    @Override
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
         if (itemStack.hasTagCompound()) {
             TileEntity tile = world.getBlockTileEntity(x, y, z);
             if (tile instanceof TileEntityColoredWool) {

@@ -94,7 +94,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory {
     }
 
     @Override
-    public boolean isStackValidForSlot(int slot, ItemStack itemStack) {
+    public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
         if (slot == 0 && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
             return true;
         }

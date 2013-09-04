@@ -12,6 +12,7 @@ public class SlotColorizer extends Slot {
         super(par1IInventory, par2, par3, par4);
     }
     
+    @Override
     public void onSlotChanged() {
         super.onSlotChanged();
         if (gui != null) {
