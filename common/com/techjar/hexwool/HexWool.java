@@ -7,7 +7,11 @@ import com.techjar.hexwool.network.PacketHandlerClient;
 import com.techjar.hexwool.network.PacketHandlerServer;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
@@ -28,6 +32,8 @@ public class HexWool {
     public static final String networkChannel = "HexWool";
     public static int idColoredWool;
     public static int idWoolColorizer;
+    public static BlockColoredWool blockColoredWool;
+    public static BlockWoolColorizer blockWoolColorizer;
 
     @Instance("HexWool")
     public static HexWool instance;
@@ -50,8 +56,12 @@ public class HexWool {
         NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
         GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");
         GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, "HW_WoolColorizer");
-        GameRegistry.registerBlock(new BlockColoredWool(idColoredWool), ItemBlockColoredWool.class, "hwColoredWool");
-        GameRegistry.registerBlock(new BlockWoolColorizer(idWoolColorizer), "hwWoolColorizer");
+        GameRegistry.registerBlock(blockColoredWool = new BlockColoredWool(idColoredWool), ItemBlockColoredWool.class, "hwColoredWool");
+        GameRegistry.registerBlock(blockWoolColorizer = new BlockWoolColorizer(idWoolColorizer), "hwWoolColorizer");
+        OreDictionary.registerOre("blockWool", new ItemStack(Block.cloth, 1, OreDictionary.WILDCARD_VALUE));
+        OreDictionary.registerOre("blockWool", new ItemStack(blockColoredWool, 1, OreDictionary.WILDCARD_VALUE));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockWoolColorizer), "iwi", "wdw", "iwi", 'w', "blockWool", 'i', new ItemStack(Item.ingotIron), 'd', new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE)));
+        //GameRegistry.addRecipe(new ItemStack(idWoolColorizer, 1, 0), "iwi", "wdw", "iwi", 'w', new ItemStack(idColoredWool, 1, OreDictionary.WILDCARD_VALUE), 'i', new ItemStack(Item.ingotIron), 'd', new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE));
         LanguageRegistry.addName(Block.blocksList[idColoredWool], "Colored Wool");
         LanguageRegistry.addName(Block.blocksList[idWoolColorizer], "Wool Colorizer");
         //LanguageRegistry.addName("item.hwColoredWool", "Colored Wool");
