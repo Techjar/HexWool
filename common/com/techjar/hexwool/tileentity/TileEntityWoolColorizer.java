@@ -1,10 +1,12 @@
 package com.techjar.hexwool.tileentity;
 
 import com.techjar.hexwool.HexWool;
+import com.techjar.hexwool.Util;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -12,6 +14,7 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class TileEntityWoolColorizer extends TileEntity implements IInventory {
     private ItemStack[] inv;
@@ -22,7 +25,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory {
 
     @Override
     public int getSizeInventory() {
-        return 1;
+        return inv.length;
     }
 
     @Override
@@ -95,8 +98,12 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory {
 
     @Override
     public boolean isStackValidForSlot(int slot, ItemStack itemStack) {
-        if (slot == 0 && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
-            return true;
+        switch (slot) {
+            case 0: return itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool;
+            case 1: return Util.itemMatchesOre(itemStack, "dyeCyan");
+            case 2: return Util.itemMatchesOre(itemStack, "dyeMagenta");
+            case 3: return Util.itemMatchesOre(itemStack, "dyeYellow");
+            case 4: return Util.itemMatchesOre(itemStack, "dyeBlack");
         }
         return false;
     }
@@ -107,7 +114,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory {
 
         NBTTagList tagList = tagCompound.getTagList("Inventory");
         for (int i = 0; i < tagList.tagCount(); i++) {
-            NBTTagCompound tag = (NBTTagCompound) tagList.tagAt(i);
+            NBTTagCompound tag = (NBTTagCompound)tagList.tagAt(i);
             byte slot = tag.getByte("Slot");
             if (slot >= 0 && slot < inv.length) {
                 inv[slot] = ItemStack.loadItemStackFromNBT(tag);
@@ -124,7 +131,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory {
             ItemStack stack = inv[i];
             if (stack != null) {
                 NBTTagCompound tag = new NBTTagCompound();
-                tag.setByte("Slot", (byte) i);
+                tag.setByte("Slot", (byte)i);
                 stack.writeToNBT(tag);
                 itemList.appendTag(tag);
             }

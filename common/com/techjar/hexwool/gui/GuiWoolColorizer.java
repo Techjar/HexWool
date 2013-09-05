@@ -112,7 +112,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
         if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
             if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound() && this.hexField.getText().trim().isEmpty()) {
-                this.hexField.setText(Util.rgbToHex(itemStack.getTagCompound().getInteger("color")));
+                this.hexField.setText(Util.colorToHex(itemStack.getTagCompound().getInteger("color")));
             }
         }
         validateColorization();
