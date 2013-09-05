@@ -8,6 +8,11 @@ import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityColoredWool extends TileEntity {
     public int color = 0xFFFFFF;
+    
+    @Override
+    public boolean canUpdate() {
+        return false;
+    }
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {

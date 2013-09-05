@@ -41,9 +41,9 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public void initGui() {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        buttonList.add(this.colorizeBtn = new GuiButton(1, this.guiLeft + 65, this.guiTop + 42, 95, 20, "Colorize"));
+        buttonList.add(this.colorizeBtn = new GuiButton(1, this.guiLeft + 85, this.guiTop + 42, 83, 20, "Colorize"));
         colorizeBtn.enabled = false;
-        hexField = new GuiTextField(fontRenderer, this.guiLeft + 65, this.guiTop + 17, 95, 20);
+        hexField = new GuiTextField(fontRenderer, this.guiLeft + 85, this.guiTop + 17, 83, 20);
         hexField.setMaxStringLength(6);
         ((SlotColorizer)this.inventorySlots.getSlot(0)).gui = this;
         updateSlot();
@@ -60,6 +60,11 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     protected void drawGuiContainerForegroundLayer(int param1, int param2) {
         GL11.glDisable(GL11.GL_LIGHTING);
         fontRenderer.drawString("Wool Colorizer", 8, 6, 4210752);
+        TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
+        if (tile.cyanDye > 0) this.drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, Util.rgbaToColor(0, 255, 255, 255));
+        if (tile.magentaDye > 0) this.drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, Util.rgbaToColor(255, 0, 255, 255));
+        if (tile.yellowDye > 0) this.drawRect(45, 43, 45 + (int)(14 * (tile.yellowDye / 1000.0F)), 45, Util.rgbaToColor(255, 255, 0, 255));
+        if (tile.blackDye > 0) this.drawRect(63, 43, 63 + (int)(14 * (tile.blackDye / 1000.0F)), 45, Util.rgbaToColor(0, 0, 0, 255));
         //fontRenderer.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 4210752);
         GL11.glEnable(GL11.GL_LIGHTING);
     }

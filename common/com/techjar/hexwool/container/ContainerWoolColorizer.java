@@ -1,5 +1,6 @@
 package com.techjar.hexwool.container;
 
+import com.techjar.hexwool.Util;
 import com.techjar.hexwool.gui.GuiWoolColorizer;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
@@ -13,12 +14,16 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ContainerWoolColorizer extends Container {
-    protected TileEntityWoolColorizer tileEntity;
+    public TileEntityWoolColorizer tileEntity;
     
     public ContainerWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
         tileEntity = tile;
 
-        addSlotToContainer(new SlotColorizer(tileEntity, 0, 26, 31));
+        addSlotToContainer(new SlotColorizer(tileEntity, 0, 17, 21));
+        addSlotToContainer(new SlotColorizer(tileEntity, 1, 53, 21));
+        for (int i = 0; i < 4; i++) {
+            addSlotToContainer(new SlotColorizer(tileEntity, i + 2, 8 + i * 18, 47));
+        }
         bindPlayerInventory(inventoryPlayer);
     }
 
@@ -44,25 +49,45 @@ public class ContainerWoolColorizer extends Container {
         ItemStack stack = null;
         Slot slotObject = (Slot)inventorySlots.get(slot);
 
-        // null checks and checks if the item can be stacked (maxStackSize > 1)
         if (slotObject != null && slotObject.getHasStack()) {
             ItemStack stackInSlot = slotObject.getStack();
             stack = stackInSlot.copy();
 
-            // merges the item into player inventory since its in the tileEntity
-            if (slot < 1) {
-                if (!this.mergeItemStack(stackInSlot, 1, 37, true)) {
+            if (slot < 6) {
+                if (!this.mergeItemStack(stackInSlot, 6, 42, true)) {
                     return null;
                 }
             }
-            // places it into the tileEntity is possible since its in the player inventory
-            else if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
-                return null;
+            else if (Util.itemMatchesOre(stackInSlot, "blockWool")) {
+                if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
+                    return null;
+                }
+            }
+            else if (Util.itemMatchesOre(stackInSlot, "dyeCyan")) {
+                if (!this.mergeItemStack(stackInSlot, 2, 3, false)) {
+                    return null;
+                }
+            }
+            else if (Util.itemMatchesOre(stackInSlot, "dyeMagenta")) {
+                if (!this.mergeItemStack(stackInSlot, 3, 4, false)) {
+                    return null;
+                }
+            }
+            else if (Util.itemMatchesOre(stackInSlot, "dyeYellow")) {
+                if (!this.mergeItemStack(stackInSlot, 4, 5, false)) {
+                    return null;
+                }
+            }
+            else if (Util.itemMatchesOre(stackInSlot, "dyeBlack")) {
+                if (!this.mergeItemStack(stackInSlot, 5, 6, false)) {
+                    return null;
+                }
             }
 
             if (stackInSlot.stackSize == 0) {
                 slotObject.putStack(null);
-            } else {
+            }
+            else {
                 slotObject.onSlotChanged();
             }
 

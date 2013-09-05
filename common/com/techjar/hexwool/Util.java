@@ -60,6 +60,10 @@ public class Util {
         return ((r << 16) & 0xFF0000) | ((g << 8) & 0xFF00) | (b & 0xFF);
     }
     
+    public static int rgbaToColor(int r, int g, int b, int a) {
+        return ((a << 24) & 0xFF000000) | ((r << 16) & 0xFF0000) | ((g << 8) & 0xFF00) | (b & 0xFF);
+    }
+    
     public static int rgbToColor(RGBColor rgb) {
         return rgbToColor(rgb.r, rgb.g, rgb.b);
     }

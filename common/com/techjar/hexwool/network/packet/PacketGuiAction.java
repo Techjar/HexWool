@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import com.techjar.hexwool.GuiHandler;
 import com.techjar.hexwool.HexWool;
+import com.techjar.hexwool.Util;
 import com.techjar.hexwool.container.ContainerWoolColorizer;
 import com.techjar.hexwool.gui.GuiWoolColorizer;
 import com.techjar.hexwool.network.HexWoolPacket;
@@ -25,7 +26,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class PacketGuiAction extends HexWoolPacket {
     public static final int COLORIZE_WOOL = 1;
-    //public static final int SET_HEX_CODE = 2;
+    public static final int SET_HEX_CODE = 2;
     
     public final int action;
     public final String message;
@@ -45,17 +46,17 @@ public class PacketGuiAction extends HexWoolPacket {
         this.message = input.readUTF();
     }
     
-    /*@Override
+    @Override
     public void processClient(INetworkManager network, Player player) {
         Minecraft client = FMLClientHandler.instance().getClient();
         switch (this.action) {
             case SET_HEX_CODE:
                 if (client.currentScreen instanceof GuiWoolColorizer) {
-                    //client.currentScreen.
+                    ((GuiWoolColorizer)client.currentScreen).hexField.setText(this.message);
                 }
                 break;
         }
-    }*/
+    }
     
     @Override
     public void processServer(INetworkManager network, Player player) {
@@ -67,13 +68,21 @@ public class PacketGuiAction extends HexWoolPacket {
                     try {
                         int color = Integer.parseInt(this.message, 16);
                         ItemStack itemStack = pl.openContainer.getSlot(0).getStack();
-                        if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
-                            if (itemStack.itemID == Block.cloth.blockID) itemStack.itemID = HexWool.idColoredWool;
+                        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool")) {
+                            pl.openContainer.getSlot(0).putStack(null);
+                            if (itemStack.itemID != HexWool.idColoredWool) itemStack.itemID = HexWool.idColoredWool;
+                            itemStack.setItemDamage(0);
                             if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
                             itemStack.getTagCompound().setInteger("color", color);
+                            pl.openContainer.getSlot(1).putStack(itemStack);
                             pl.openContainer.detectAndSendChanges();
                         }
                     } catch (NumberFormatException ex) {}
+                }
+                break;
+            case SET_HEX_CODE:
+                if (pl.openContainer instanceof ContainerWoolColorizer) {
+                    
                 }
                 break;
         }

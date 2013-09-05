@@ -63,7 +63,7 @@ public class BlockColoredWool extends Block {
         TileEntity tile = world.getBlockTileEntity(x, y, z);
 
         if (tile instanceof TileEntityColoredWool) {
-            itemStack.setTagCompound(new NBTTagCompound("tag"));
+            if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
             itemStack.getTagCompound().setInteger("color", ((TileEntityColoredWool)tile).color);
         }
         return itemStack;
