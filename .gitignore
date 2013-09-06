@@ -218,3 +218,4 @@ pip-log.txt
 build.properties
 build_number.properties
 dependencies/
+modjars/
