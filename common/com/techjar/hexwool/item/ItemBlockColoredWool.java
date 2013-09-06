@@ -22,7 +22,7 @@ public class ItemBlockColoredWool extends ItemBlock {
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean par4) {
         if (itemStack.hasTagCompound()) {
             int color = itemStack.getTagCompound().getInteger("color");
-            list.add("Color: #" + Util.rgbToHex(color));
+            list.add("Color: #" + Util.colorToHex(color));
         }
     }
     

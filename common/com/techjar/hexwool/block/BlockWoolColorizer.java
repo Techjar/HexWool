@@ -1,13 +1,18 @@
 package com.techjar.hexwool.block;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import com.techjar.hexwool.GuiHandler;
 import com.techjar.hexwool.HexWool;
+import com.techjar.hexwool.network.packet.PacketGuiAction;
 import com.techjar.hexwool.tileentity.TileEntityColoredWool;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -21,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockWoolColorizer extends Block {
@@ -42,14 +48,25 @@ public class BlockWoolColorizer extends Block {
     
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
             TileEntity tile = world.getBlockTileEntity(x, y, z);
             if (tile instanceof TileEntityWoolColorizer) {
                 player.openGui(HexWool.instance, GuiHandler.WOOL_COLORIZER, world, x, y, z);
-                return true;
+                try {
+                    TileEntityWoolColorizer tileEntity = (TileEntityWoolColorizer)tile;
+                    PacketDispatcher.sendPacketToPlayer(new PacketGuiAction(PacketGuiAction.SET_DYE_AMOUNTS, String.format("%s;%s;%s;%s", tileEntity.cyanDye, tileEntity.magentaDye, tileEntity.yellowDye, tileEntity.blackDye)).getPacket(), (Player)player);
+                    PacketDispatcher.sendPacketToPlayer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, tileEntity.colorCode).getPacket(), (Player)player);
+                } catch (IOException ex) { ex.printStackTrace(); }
             }
-            return false;
+        }
+        return true;
     }
     
+    @Override
+    public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
+        return true;
+    }
+
     @Override
     public boolean hasTileEntity(int meta) {
         return true;

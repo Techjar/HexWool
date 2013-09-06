@@ -4,6 +4,7 @@ import com.techjar.hexwool.gui.GuiWoolColorizer;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
 public class SlotColorizer extends Slot {
     public GuiWoolColorizer gui;
@@ -16,7 +17,12 @@ public class SlotColorizer extends Slot {
     public void onSlotChanged() {
         super.onSlotChanged();
         if (gui != null) {
-            gui.updateSlot();
+            gui.updateState();
         }
+    }
+    
+    @Override
+    public boolean isItemValid(ItemStack itemStack) {
+        return this.inventory.isItemValidForSlot(this.slotNumber, itemStack);
     }
 }

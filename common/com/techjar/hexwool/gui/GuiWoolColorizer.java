@@ -42,12 +42,12 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public void initGui() {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        buttonList.add(this.colorizeBtn = new GuiButton(1, this.guiLeft + 65, this.guiTop + 42, 95, 20, "Colorize"));
+        buttonList.add(this.colorizeBtn = new GuiButton(1, this.guiLeft + 85, this.guiTop + 42, 83, 20, "Colorize"));
         colorizeBtn.enabled = false;
-        hexField = new GuiTextField(fontRenderer, this.guiLeft + 65, this.guiTop + 17, 95, 20);
+        hexField = new GuiTextField(fontRenderer, this.guiLeft + 85, this.guiTop + 17, 83, 20);
         hexField.setMaxStringLength(6);
         ((SlotColorizer)this.inventorySlots.getSlot(0)).gui = this;
-        updateSlot();
+        updateState();
     }
     
     @Override
@@ -61,6 +61,11 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     protected void drawGuiContainerForegroundLayer(int param1, int param2) {
         GL11.glDisable(GL11.GL_LIGHTING);
         fontRenderer.drawString("Wool Colorizer", 8, 6, 4210752);
+        TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
+        if (tile.cyanDye > 0) this.drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, Util.rgbaToColor(0, 255, 255, 255));
+        if (tile.magentaDye > 0) this.drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, Util.rgbaToColor(255, 0, 255, 255));
+        if (tile.yellowDye > 0) this.drawRect(45, 43, 45 + (int)(14 * (tile.yellowDye / 1000.0F)), 45, Util.rgbaToColor(255, 255, 0, 255));
+        if (tile.blackDye > 0) this.drawRect(63, 43, 63 + (int)(14 * (tile.blackDye / 1000.0F)), 45, Util.rgbaToColor(0, 0, 0, 255));
         //fontRenderer.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 4210752);
         GL11.glEnable(GL11.GL_LIGHTING);
     }
@@ -89,6 +94,9 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     public void keyTyped(char par1, int par2) {
         if (hexField.textboxKeyTyped(par1, par2)) {
+            try {
+                PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, hexField.getText()).getPacket());
+            } catch (IOException ex) { ex.printStackTrace(); }
             validateColorization();
         } else {
             super.keyTyped(par1, par2);
@@ -97,10 +105,11 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     
     private void validateColorization() {
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
-        if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool) && this.hexField.getText().length() == 6) {
+        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool") && this.hexField.getText().length() == 6) {
+            TileEntityWoolColorizer tile = ((ContainerWoolColorizer)this.inventorySlots).tileEntity;
             try {
-                Integer.parseInt(this.hexField.getText(), 16);
-                this.colorizeBtn.enabled = true;
+                int color = Integer.parseInt(this.hexField.getText(), 16);
+                this.colorizeBtn.enabled = tile.hasRequiredDyes(color);
             } catch (NumberFormatException ex) {
                 this.colorizeBtn.enabled = false;
             }
@@ -109,13 +118,13 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         }
     }
     
-    public void updateSlot() {
-        ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
+    public void updateState() {
+        /*ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
         if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
             if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound() && this.hexField.getText().trim().isEmpty()) {
-                this.hexField.setText(Util.rgbToHex(itemStack.getTagCompound().getInteger("color")));
+                this.hexField.setText(Util.colorToHex(itemStack.getTagCompound().getInteger("color")));
             }
-        }
+        }*/
         validateColorization();
     }
     
@@ -130,7 +139,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         switch (button.id) {
             case 1:
                 try {
-                    PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.COLORIZE_WOOL, hexField.getText()).getPacket());
+                    PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.COLORIZE_WOOL, "").getPacket());
                 } catch (IOException ex) { ex.printStackTrace(); }
                 break;
         }

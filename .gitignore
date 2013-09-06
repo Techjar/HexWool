@@ -216,3 +216,4 @@ pip-log.txt
 
 #buildscript
 build.properties
+build_number.properties
