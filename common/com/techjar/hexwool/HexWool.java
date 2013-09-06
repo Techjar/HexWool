@@ -49,8 +49,8 @@ public class HexWool {
          config.load();
          idColoredWool = config.getBlock("coloredWool", 3540).getInt();
          idWoolColorizer = config.getBlock("woolColorizer", 3541).getInt();
-         dyePerWool = config.get(Configuration.CATEGORY_GENERAL, "dyePerWool", 50, "Millibuckets of dye used per wool.").getInt();
-         dyePerItem = config.get(Configuration.CATEGORY_GENERAL, "dyePerItem", 250, "Millibuckets of dye given per dye item.").getInt();
+         dyePerWool = config.get(Configuration.CATEGORY_GENERAL, "dyePerWool", 25, "Millibuckets of dye used per wool. Default: 25").getInt();
+         dyePerItem = config.get(Configuration.CATEGORY_GENERAL, "dyePerItem", 250, "Millibuckets of dye given per dye item. Default: 250").getInt();
          if (config.hasChanged()) config.save();
     }
 
