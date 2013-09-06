@@ -42,6 +42,13 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     public void colorizeWool(int color) {
         ItemStack itemStack = inv[0];
         if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool")) {
+            if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound()) {
+                if (itemStack.getTagCompound().hasKey("color") && itemStack.getTagCompound().getInteger("color") == color) {
+                    inv[1] = itemStack;
+                    inv[0] = null;
+                    return;
+                }
+            }
             int amountMade = 0;
             if (inv[1] != null) {
                 if (inv[1].stackSize < 64) {
