@@ -88,6 +88,7 @@
 			<fileset dir="${build.dir.development}\forge\mcp\src\minecraft" includes="mcmod.info" />
 			<fileset dir="${build.dir.development}\forge\mcp\reobf\minecraft" includes="com/techjar/**" />
 			<fileset dir="${build.dir.development}\source\${build.dir.modproject}\${build.dir.modresources}" excludes="**/*.psd" />
+			<fileset dir="${build.dir.development}\source\${build.dir.modproject}\${build.dir.moddependencies}" />
 		</jar>
 
 		<!-- Clean up the MCP source now that we are done -->
@@ -109,6 +110,7 @@
 			<fileset dir="${build.dir.development}\forge\mcp\src\minecraft" includes="mcmod.info" />
 			<fileset dir="${build.dir.development}\forge\mcp\reobf\minecraft" includes="com/techjar/**" />
 			<fileset dir="${build.dir.development}\source\${build.dir.modproject}\${build.dir.modresources}" excludes="**/*.psd" />
+			<fileset dir="${build.dir.development}\source\${build.dir.modproject}\${build.dir.moddependencies}" />
 		</jar>
 
 		<!-- Sign the finished jar -->
