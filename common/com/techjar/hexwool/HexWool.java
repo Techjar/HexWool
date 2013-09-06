@@ -32,6 +32,8 @@ public class HexWool {
     public static final String networkChannel = "HexWool";
     public static int idColoredWool;
     public static int idWoolColorizer;
+    public static int dyePerWool;
+    public static int dyePerItem;
     public static BlockColoredWool blockColoredWool;
     public static BlockWoolColorizer blockWoolColorizer;
 
@@ -47,6 +49,8 @@ public class HexWool {
          config.load();
          idColoredWool = config.getBlock("coloredWool", 3540).getInt();
          idWoolColorizer = config.getBlock("woolColorizer", 3541).getInt();
+         dyePerWool = config.get(Configuration.CATEGORY_GENERAL, "dyePerWool", 50, "Millibuckets of dye used per wool.").getInt();
+         dyePerItem = config.get(Configuration.CATEGORY_GENERAL, "dyePerItem", 250, "Millibuckets of dye given per dye item.").getInt();
          if (config.hasChanged()) config.save();
     }
 

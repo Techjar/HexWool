@@ -12,6 +12,7 @@ import com.techjar.hexwool.container.ContainerWoolColorizer;
 import com.techjar.hexwool.gui.GuiWoolColorizer;
 import com.techjar.hexwool.network.HexWoolPacket;
 import com.techjar.hexwool.network.PacketHandler;
+import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -27,6 +28,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 public class PacketGuiAction extends HexWoolPacket {
     public static final int COLORIZE_WOOL = 1;
     public static final int SET_HEX_CODE = 2;
+    public static final int SET_DYE_AMOUNTS = 3;
     
     public final int action;
     public final String message;
@@ -48,11 +50,24 @@ public class PacketGuiAction extends HexWoolPacket {
     
     @Override
     public void processClient(INetworkManager network, Player player) {
+        EntityPlayerSP pl = (EntityPlayerSP)player;
         Minecraft client = FMLClientHandler.instance().getClient();
         switch (this.action) {
             case SET_HEX_CODE:
                 if (client.currentScreen instanceof GuiWoolColorizer) {
                     ((GuiWoolColorizer)client.currentScreen).hexField.setText(this.message);
+                    ((GuiWoolColorizer)client.currentScreen).updateState();
+                }
+                break;
+            case SET_DYE_AMOUNTS:
+                if (client.currentScreen instanceof GuiWoolColorizer && pl.openContainer instanceof ContainerWoolColorizer) {
+                    String[] split = message.split(";");
+                    ContainerWoolColorizer container = (ContainerWoolColorizer)pl.openContainer;
+                    container.tileEntity.cyanDye = Integer.parseInt(split[0]);
+                    container.tileEntity.magentaDye = Integer.parseInt(split[1]);
+                    container.tileEntity.yellowDye = Integer.parseInt(split[2]);
+                    container.tileEntity.blackDye = Integer.parseInt(split[3]);
+                    ((GuiWoolColorizer)client.currentScreen).updateState();
                 }
                 break;
         }
@@ -64,25 +79,19 @@ public class PacketGuiAction extends HexWoolPacket {
         switch (this.action) {
             case COLORIZE_WOOL:
                 if (pl.openContainer instanceof ContainerWoolColorizer) {
-                    if (this.message.length() != 6) break;
                     try {
-                        int color = Integer.parseInt(this.message, 16);
-                        ItemStack itemStack = pl.openContainer.getSlot(0).getStack();
-                        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool")) {
-                            pl.openContainer.getSlot(0).putStack(null);
-                            if (itemStack.itemID != HexWool.idColoredWool) itemStack.itemID = HexWool.idColoredWool;
-                            itemStack.setItemDamage(0);
-                            if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
-                            itemStack.getTagCompound().setInteger("color", color);
-                            pl.openContainer.getSlot(1).putStack(itemStack);
-                            pl.openContainer.detectAndSendChanges();
-                        }
+                        TileEntityWoolColorizer tile = ((ContainerWoolColorizer)pl.openContainer).tileEntity;
+                        if (tile.colorCode.length() != 6) break;
+                        int color = Integer.parseInt(tile.colorCode, 16);
+                        if (tile.hasRequiredDyes(color)) tile.colorizeWool(color);
                     } catch (NumberFormatException ex) {}
                 }
                 break;
             case SET_HEX_CODE:
                 if (pl.openContainer instanceof ContainerWoolColorizer) {
-                    
+                    ((ContainerWoolColorizer)pl.openContainer).tileEntity.colorCode = message;
+                    ((ContainerWoolColorizer)pl.openContainer).lastEditor = player;
+                    pl.openContainer.detectAndSendChanges();
                 }
                 break;
         }

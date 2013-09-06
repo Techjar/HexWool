@@ -1,9 +1,14 @@
 package com.techjar.hexwool.container;
 
+import java.io.IOException;
+
 import com.techjar.hexwool.Util;
 import com.techjar.hexwool.gui.GuiWoolColorizer;
+import com.techjar.hexwool.network.packet.PacketGuiAction;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +20,8 @@ import net.minecraft.item.ItemStack;
 
 public class ContainerWoolColorizer extends Container {
     public TileEntityWoolColorizer tileEntity;
+    public Player lastEditor;
+    private String oldColorCode = "";
     
     public ContainerWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
         tileEntity = tile;
@@ -30,6 +37,38 @@ public class ContainerWoolColorizer extends Container {
     @Override
     public boolean canInteractWith(EntityPlayer player) {
         return tileEntity.isUseableByPlayer(player);
+    }
+    
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+
+        if (tileEntity.dyesChanged) {
+            tileEntity.dyesChanged = false;
+            for (int i = 0; i < this.crafters.size(); ++i) {
+                ICrafting crafter = (ICrafting)this.crafters.get(i);
+                if (crafter instanceof Player) {
+                    try {
+                        PacketDispatcher.sendPacketToPlayer(new PacketGuiAction(PacketGuiAction.SET_DYE_AMOUNTS, String.format("%s;%s;%s;%s", tileEntity.cyanDye, tileEntity.magentaDye, tileEntity.yellowDye, tileEntity.blackDye)).getPacket(), (Player)crafter);
+                    } catch (IOException ex) { ex.printStackTrace(); }
+                }
+            }
+        }
+        if (!oldColorCode.equals(tileEntity.colorCode)) {
+            oldColorCode = tileEntity.colorCode;
+            for (int i = 0; i < this.crafters.size(); ++i) {
+                ICrafting crafter = (ICrafting)this.crafters.get(i);
+                if (crafter instanceof Player) {
+                    if (crafter == lastEditor) {
+                        lastEditor = null;
+                        continue;
+                    }
+                    try {
+                        PacketDispatcher.sendPacketToPlayer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, tileEntity.colorCode).getPacket(), (Player)crafter);
+                    } catch (IOException ex) { ex.printStackTrace(); }
+                }
+            }
+        }
     }
 
     protected void bindPlayerInventory(InventoryPlayer inventoryPlayer) {

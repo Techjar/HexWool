@@ -46,7 +46,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         hexField = new GuiTextField(fontRenderer, this.guiLeft + 85, this.guiTop + 17, 83, 20);
         hexField.setMaxStringLength(6);
         ((SlotColorizer)this.inventorySlots.getSlot(0)).gui = this;
-        updateSlot();
+        updateState();
     }
     
     @Override
@@ -93,6 +93,9 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     public void keyTyped(char par1, int par2) {
         if (hexField.textboxKeyTyped(par1, par2)) {
+            try {
+                PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, hexField.getText()).getPacket());
+            } catch (IOException ex) { ex.printStackTrace(); }
             validateColorization();
         } else {
             super.keyTyped(par1, par2);
@@ -101,10 +104,11 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     
     private void validateColorization() {
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
-        if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool) && this.hexField.getText().length() == 6) {
+        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool") && this.hexField.getText().length() == 6) {
+            TileEntityWoolColorizer tile = ((ContainerWoolColorizer)this.inventorySlots).tileEntity;
             try {
-                Integer.parseInt(this.hexField.getText(), 16);
-                this.colorizeBtn.enabled = true;
+                int color = Integer.parseInt(this.hexField.getText(), 16);
+                this.colorizeBtn.enabled = tile.hasRequiredDyes(color);
             } catch (NumberFormatException ex) {
                 this.colorizeBtn.enabled = false;
             }
@@ -113,13 +117,13 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         }
     }
     
-    public void updateSlot() {
-        ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
+    public void updateState() {
+        /*ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
         if (itemStack != null && (itemStack.itemID == Block.cloth.blockID || itemStack.itemID == HexWool.idColoredWool)) {
             if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound() && this.hexField.getText().trim().isEmpty()) {
                 this.hexField.setText(Util.colorToHex(itemStack.getTagCompound().getInteger("color")));
             }
-        }
+        }*/
         validateColorization();
     }
     
@@ -134,7 +138,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         switch (button.id) {
             case 1:
                 try {
-                    PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.COLORIZE_WOOL, hexField.getText()).getPacket());
+                    PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.COLORIZE_WOOL, "").getPacket());
                 } catch (IOException ex) { ex.printStackTrace(); }
                 break;
         }
