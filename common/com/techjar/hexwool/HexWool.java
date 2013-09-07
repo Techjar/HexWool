@@ -7,6 +7,7 @@ import com.techjar.hexwool.network.PacketHandlerClient;
 import com.techjar.hexwool.network.PacketHandlerServer;
 
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
@@ -58,18 +59,25 @@ public class HexWool {
     public void load(FMLInitializationEvent event) {
         proxy.registerRenderers();
         NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
+        
+        // Blocks and Tile Entities
         GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");
         GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, "HW_WoolColorizer");
         GameRegistry.registerBlock(blockColoredWool = new BlockColoredWool(idColoredWool), ItemBlockColoredWool.class, "hwColoredWool");
         Block.setBurnProperties(idColoredWool, 30, 60);
+        
+        // Ore Dictionary
         GameRegistry.registerBlock(blockWoolColorizer = new BlockWoolColorizer(idWoolColorizer), "hwWoolColorizer");
         OreDictionary.registerOre("blockWool", new ItemStack(Block.cloth, 1, OreDictionary.WILDCARD_VALUE));
         OreDictionary.registerOre("blockWool", new ItemStack(blockColoredWool, 1, OreDictionary.WILDCARD_VALUE));
+        
+        // Recipes
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockWoolColorizer), "iwi", "wdw", "iwi", 'w', "blockWool", 'i', new ItemStack(Item.ingotIron), 'd', new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE)));
-        //GameRegistry.addRecipe(new ItemStack(idWoolColorizer, 1, 0), "iwi", "wdw", "iwi", 'w', new ItemStack(idColoredWool, 1, OreDictionary.WILDCARD_VALUE), 'i', new ItemStack(Item.ingotIron), 'd', new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE));
+        
+        // Localization
         LanguageRegistry.addName(Block.blocksList[idColoredWool], "Colored Wool");
         LanguageRegistry.addName(Block.blocksList[idWoolColorizer], "Wool Colorizer");
-        //LanguageRegistry.addName("item.hwColoredWool", "Colored Wool");
+        LanguageRegistry.instance().addStringLocalization("itemGroup.tabWool", "en_US", "Wool");
     }
 
     @PostInit
