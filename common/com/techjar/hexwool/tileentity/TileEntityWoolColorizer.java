@@ -11,6 +11,8 @@ import com.techjar.hexwool.network.packet.PacketGuiAction;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
+import dan200.computer.api.IComputerAccess;
+import dan200.computer.api.IPeripheral;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -26,7 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class TileEntityWoolColorizer extends TileEntity implements IInventory, ISidedInventory {
+public class TileEntityWoolColorizer extends TileEntity implements IInventory, ISidedInventory, IPeripheral {
     public String colorCode = "";
     public int cyanDye;
     public int magentaDye;
@@ -39,14 +41,14 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
         inv = new ItemStack[6];
     }
     
-    public void colorizeWool(int color) {
+    public boolean colorizeWool(int color) {
         ItemStack itemStack = inv[0];
-        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool")) {
+        if (itemStack != null && hasRequiredDyes(color) && Util.itemMatchesOre(itemStack, "blockWool")) {
             if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound()) {
                 if (itemStack.getTagCompound().hasKey("color") && itemStack.getTagCompound().getInteger("color") == color) {
                     inv[1] = itemStack;
                     inv[0] = null;
-                    return;
+                    return true;
                 }
             }
             int amountMade = 0;
@@ -71,36 +73,40 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
                 amountMade = itemStack.stackSize;
             }
             
-            int[] dyes = getRequiredDyes(color);
-            int cyan = dyes[0];
-            int magenta = dyes[1];
-            int yellow = dyes[2];
-            int black = dyes[3];
-            outer: for (int i = 0; i < amountMade; i++) {
-                for (int j = 0; j < 2; j++) {
-                    if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
-                        if (j == 1) break outer;
-                        if (checkDyes()) break;
+            if (amountMade > 0) {
+                int[] dyes = getRequiredDyes(color);
+                int cyan = dyes[0];
+                int magenta = dyes[1];
+                int yellow = dyes[2];
+                int black = dyes[3];
+                outer: for (int i = 0; i < amountMade; i++) {
+                    for (int j = 0; j < 2; j++) {
+                        if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
+                            if (j == 1) break outer;
+                            if (checkDyes()) break;
+                        }
                     }
+                    
+                    cyanDye -= cyan;
+                    magentaDye -= magenta;
+                    yellowDye -= yellow;
+                    blackDye -= black;
+                    dyesChanged = true;
+                    
+                    itemStack.stackSize--;
+                    if (inv[1] != null) inv[1].stackSize++;
+                    else {
+                        inv[1] = new ItemStack(HexWool.blockColoredWool);
+                        inv[1].setTagCompound(new NBTTagCompound("tag"));
+                        inv[1].getTagCompound().setInteger("color", color);
+                    }
+                    
+                    if (itemStack.stackSize < 1) inv[0] = null;
                 }
-                
-                cyanDye -= cyan;
-                magentaDye -= magenta;
-                yellowDye -= yellow;
-                blackDye -= black;
-                dyesChanged = true;
-                
-                itemStack.stackSize--;
-                if (inv[1] != null) inv[1].stackSize++;
-                else {
-                    inv[1] = new ItemStack(HexWool.blockColoredWool);
-                    inv[1].setTagCompound(new NBTTagCompound("tag"));
-                    inv[1].getTagCompound().setInteger("color", color);
-                }
-                
-                if (itemStack.stackSize < 1) inv[0] = null;
+                return true;
             }
         }
+        return false;
     }
     
     public int[] getRequiredDyes(int color) {
@@ -316,4 +322,50 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
         }
         tagCompound.setTag("Inventory", itemList);
     }
+
+    //*** Begin ComputerCraft Integration ***//
+    @Override
+    public String getType() {
+        return "wool_colorizer";
+    }
+
+    @Override
+    public String[] getMethodNames() {
+        return new String[]{ "getHexCode", "setHexCode", "getCyanDye", "getMagentaDye", "getYellowDye", "getBlackDye" };
+    }
+
+    @Override
+    public Object[] callMethod(IComputerAccess computer, int method, Object[] arguments) throws Exception {
+        switch(method) {
+            case 0: return new Object[]{ colorCode };
+            case 1:
+                if (arguments.length < 1) throw new Exception("Not enough arguments");
+                if (arguments[0].toString().length() != 6) throw new Exception("Invalid hex code");
+                try { Integer.parseInt(arguments[0].toString(), 16); }
+                catch(NumberFormatException ex) { throw new Exception("Invalid hex code"); }
+                colorCode = arguments[0].toString();
+                break;
+            case 2: return new Object[]{ cyanDye };
+            case 3: return new Object[]{ magentaDye };
+            case 4: return new Object[]{ yellowDye };
+            case 5: return new Object[]{ blackDye };
+        }
+        return null;
+    }
+
+    @Override
+    public boolean canAttachToSide(int side) {
+        return true;
+    }
+
+    @Override
+    public void attach(IComputerAccess computer) {
+        // whatever
+    }
+
+    @Override
+    public void detach(IComputerAccess computer) {
+        // whatever
+    }
+    //*** End ComputerCraft Integration ***//
 }
