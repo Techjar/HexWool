@@ -72,7 +72,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.bindTexture("/mods/hexwool/textures/gui/woolColorizer.png");
+        this.mc.renderEngine.bindTexture("/mods/hexwool/textures/gui/wool_colorizer.png");
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);

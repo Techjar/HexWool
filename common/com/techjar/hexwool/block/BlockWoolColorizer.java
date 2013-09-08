@@ -26,11 +26,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockWoolColorizer extends Block {
     private final Random random = new Random();
+    protected Icon topIcon;
+    protected Icon bottomIcon;
     
     public BlockWoolColorizer(int id) {
         super(id, Material.iron);
@@ -43,7 +46,17 @@ public class BlockWoolColorizer extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister iconRegister) {
-        this.blockIcon = iconRegister.registerIcon("hexwool:woolColorizer");
+        this.topIcon = iconRegister.registerIcon("hexwool:wool_colorizer_top");
+        this.bottomIcon = iconRegister.registerIcon("hexwool:wool_colorizer_bottom");
+        this.blockIcon = iconRegister.registerIcon("hexwool:wool_colorizer_side");
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Icon getIcon(int side, int meta) {
+        if (side == 0) return this.bottomIcon;
+        if (side == 1) return this.topIcon;
+        return this.blockIcon;
     }
     
     @Override
