@@ -67,6 +67,7 @@ public class BlockWoolColorizer extends Block {
     }
     
     @Override
+    @SideOnly(Side.CLIENT)
     public int getRenderType() {
         return ClientProxy.renderId;
     }
