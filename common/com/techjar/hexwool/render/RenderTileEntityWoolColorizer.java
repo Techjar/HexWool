@@ -47,8 +47,7 @@ public class RenderTileEntityWoolColorizer extends TileEntitySpecialRenderer {
             GL11.glTranslated(x, y, z);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             
-            int light = tileEntity.worldObj.getLightBrightnessForSkyBlocks(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord, 0);
-            System.out.println(light + " " + (light % 65536) + " " + (light / 65536));
+            int light = tile.worldObj.getLightBrightnessForSkyBlocks(tile.xCoord, tile.yCoord + 1, tile.zCoord, 0);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light % 65536, light / 65536);
             
             ItemStack itemStack = tile.getStackInSlot(0) != null ? tile.getStackInSlot(0) : tile.getStackInSlot(1);
