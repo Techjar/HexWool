@@ -94,8 +94,11 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public void keyTyped(char par1, int par2) {
         if (hexField.textboxKeyTyped(par1, par2)) {
             try {
+                TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
+                tile.colorCode = hexField.getText();
+                tile.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
                 PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, hexField.getText()).getPacket());
-            } catch (IOException ex) { ex.printStackTrace(); }
+            } catch (Exception ex) { ex.printStackTrace(); }
             validateColorization();
         } else {
             super.keyTyped(par1, par2);

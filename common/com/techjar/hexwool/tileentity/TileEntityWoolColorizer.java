@@ -103,6 +103,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
                     
                     if (itemStack.stackSize < 1) inv[0] = null;
                 }
+                worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
                 return true;
             }
         }
@@ -168,6 +169,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
         if (itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
             itemStack.stackSize = getInventoryStackLimit();
         }
+        this.onInventoryChanged();
     }
 
     @Override
@@ -211,6 +213,11 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
             case 5: return Util.itemMatchesOre(itemStack, "dyeBlack");
         }
         return false;
+    }
+    
+    @Override
+    public void onInventoryChanged() {
+        super.onInventoryChanged();
     }
 
     @Override
@@ -322,6 +329,18 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
         }
         tagCompound.setTag("Inventory", itemList);
     }
+    
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound tagCompound = new NBTTagCompound();
+        this.writeToNBT(tagCompound);
+        return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, tagCompound);
+    }
+    
+    @Override
+    public void onDataPacket(INetworkManager network, Packet132TileEntityData packet) {
+        this.readFromNBT(packet.customParam1);
+    }
 
     //*** Begin ComputerCraft Integration ***//
     @Override
@@ -344,6 +363,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
                 try { Integer.parseInt(arguments[0].toString(), 16); }
                 catch(NumberFormatException ex) { throw new Exception("Invalid hex code"); }
                 colorCode = arguments[0].toString();
+                worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
                 break;
             case 2: return new Object[]{ cyanDye };
             case 3: return new Object[]{ magentaDye };

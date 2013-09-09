@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.techjar.hexwool.ClientProxy;
 import com.techjar.hexwool.GuiHandler;
 import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.network.packet.PacketGuiAction;
@@ -34,6 +35,7 @@ public class BlockWoolColorizer extends Block {
     private final Random random = new Random();
     protected Icon topIcon;
     protected Icon bottomIcon;
+    public Icon dishIcon;
     
     public BlockWoolColorizer(int id) {
         super(id, Material.iron);
@@ -46,6 +48,7 @@ public class BlockWoolColorizer extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister iconRegister) {
+        this.dishIcon = iconRegister.registerIcon("hexwool:wool_colorizer_dish");
         this.topIcon = iconRegister.registerIcon("hexwool:wool_colorizer_top");
         this.bottomIcon = iconRegister.registerIcon("hexwool:wool_colorizer_bottom");
         this.blockIcon = iconRegister.registerIcon("hexwool:wool_colorizer_side");
@@ -57,6 +60,11 @@ public class BlockWoolColorizer extends Block {
         if (side == 0) return this.bottomIcon;
         if (side == 1) return this.topIcon;
         return this.blockIcon;
+    }
+    
+    @Override
+    public int getRenderType() {
+        return ClientProxy.renderId;
     }
     
     @Override

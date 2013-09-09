@@ -54,7 +54,10 @@ public class PacketGuiAction extends HexWoolPacket {
         Minecraft client = FMLClientHandler.instance().getClient();
         switch (this.action) {
             case SET_HEX_CODE:
-                if (client.currentScreen instanceof GuiWoolColorizer) {
+                if (client.currentScreen instanceof GuiWoolColorizer && pl.openContainer instanceof ContainerWoolColorizer) {
+                    TileEntityWoolColorizer tile = ((ContainerWoolColorizer)pl.openContainer).tileEntity;
+                    tile.colorCode = this.message;
+                    tile.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
                     ((GuiWoolColorizer)client.currentScreen).hexField.setText(this.message);
                     ((GuiWoolColorizer)client.currentScreen).updateState();
                 }
