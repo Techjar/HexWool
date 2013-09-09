@@ -11,6 +11,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.common.Mod;
@@ -63,11 +64,11 @@ public class HexWool {
         // Blocks and Tile Entities
         GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");
         GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, "HW_WoolColorizer");
+        GameRegistry.registerBlock(blockWoolColorizer = new BlockWoolColorizer(idWoolColorizer), "hwWoolColorizer");
         GameRegistry.registerBlock(blockColoredWool = new BlockColoredWool(idColoredWool), ItemBlockColoredWool.class, "hwColoredWool");
         Block.setBurnProperties(idColoredWool, 30, 60);
         
         // Ore Dictionary
-        GameRegistry.registerBlock(blockWoolColorizer = new BlockWoolColorizer(idWoolColorizer), "hwWoolColorizer");
         OreDictionary.registerOre("blockWool", new ItemStack(Block.cloth, 1, OreDictionary.WILDCARD_VALUE));
         OreDictionary.registerOre("blockWool", new ItemStack(blockColoredWool, 1, OreDictionary.WILDCARD_VALUE));
         
@@ -77,7 +78,6 @@ public class HexWool {
         // Localization
         LanguageRegistry.addName(Block.blocksList[idColoredWool], "Colored Wool");
         LanguageRegistry.addName(Block.blocksList[idWoolColorizer], "Wool Colorizer");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.tabWool", "en_US", "Wool");
     }
 
     @PostInit

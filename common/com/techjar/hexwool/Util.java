@@ -4,7 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import com.techjar.hexwool.api.IColorizable;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -18,6 +23,79 @@ public class Util {
             }
         }
         return false;
+    }
+    
+    public static Object getItemOrBlockFromStack(ItemStack itemStack) {
+        if (itemStack.itemID < 4096) {
+            if (Block.blocksList[itemStack.itemID] != null && Block.blocksList[itemStack.itemID].blockID != 0) {
+                return Block.blocksList[itemStack.itemID];
+            }
+        }
+        if (Item.itemsList[itemStack.itemID] != null) {
+            return Item.itemsList[itemStack.itemID];
+        }
+        return null;
+    }
+    
+    public static boolean canColorizeItem(ItemStack itemStack) {
+        if ((itemStack.itemID >= 298 && itemStack.itemID <= 301) || itemMatchesOre(itemStack, "blockWool")) return true;
+        Object itemObj = getItemOrBlockFromStack(itemStack);
+        return itemObj instanceof IColorizable;
+    }
+    
+    public static boolean getItemHasColor(ItemStack itemStack) {
+        itemStack = itemStack.copy();
+        if (itemStack.itemID >= 298 && itemStack.itemID <= 301) {
+            if (itemStack.hasTagCompound()) return itemStack.getTagCompound().getCompoundTag("display").hasKey("color");
+        }
+        else if (itemStack.itemID == HexWool.idColoredWool) {
+            if (itemStack.hasTagCompound()) return itemStack.getTagCompound().hasKey("color");
+        }
+        else {
+            Object itemObj = getItemOrBlockFromStack(itemStack);
+            if (itemObj instanceof IColorizable) {
+                return ((IColorizable)itemObj).hasColor(itemStack);
+            }
+        }
+        return false;
+    }
+    
+    public static int getItemColor(ItemStack itemStack) {
+        itemStack = itemStack.copy();
+        if (itemStack.itemID >= 298 && itemStack.itemID <= 301) {
+            if (itemStack.hasTagCompound()) return itemStack.getTagCompound().getCompoundTag("display").getInteger("color");
+        }
+        else if (itemStack.itemID == HexWool.idColoredWool) {
+            if (itemStack.hasTagCompound()) return itemStack.getTagCompound().getInteger("color");
+        }
+        else {
+            Object itemObj = getItemOrBlockFromStack(itemStack);
+            if (itemObj instanceof IColorizable) {
+                return ((IColorizable)itemObj).getColor(itemStack);
+            }
+        }
+        return 0xFFFFFF;
+    }
+    
+    public static ItemStack colorizeItem(ItemStack itemStack, int color) {
+        itemStack = itemStack.copy();
+        if (itemStack.itemID >= 298 && itemStack.itemID <= 301) {
+            if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
+            itemStack.getTagCompound().getCompoundTag("display").setInteger("color", color);
+        }
+        if (itemMatchesOre(itemStack, "blockWool")) {
+            if (itemStack.itemID != HexWool.idColoredWool) {
+                itemStack.itemID = HexWool.idColoredWool;
+                itemStack.setItemDamage(0);
+            }
+            if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
+            itemStack.getTagCompound().setInteger("color", color);
+        }
+        Object itemObj = getItemOrBlockFromStack(itemStack);
+        if (itemObj instanceof IColorizable) {
+            itemStack = ((IColorizable)itemObj).colorize(itemStack, color);
+        }
+        return itemStack;
     }
 
     public static String colorToHex(int color) {

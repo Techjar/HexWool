@@ -73,7 +73,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.func_110577_a(new ResourceLocation("hexwool", "textures/gui/woolColorizer.png"));
+        this.mc.renderEngine.func_110577_a(new ResourceLocation("hexwool", "textures/gui/wool_colorizer.png"));
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
@@ -95,8 +95,11 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public void keyTyped(char par1, int par2) {
         if (hexField.textboxKeyTyped(par1, par2)) {
             try {
+                TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
+                tile.colorCode = hexField.getText();
+                tile.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
                 PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, hexField.getText()).getPacket());
-            } catch (IOException ex) { ex.printStackTrace(); }
+            } catch (Exception ex) { ex.printStackTrace(); }
             validateColorization();
         } else {
             super.keyTyped(par1, par2);
@@ -105,7 +108,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     
     private void validateColorization() {
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
-        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool") && this.hexField.getText().length() == 6) {
+        if (itemStack != null && Util.canColorizeItem(itemStack) && this.hexField.getText().length() == 6) {
             TileEntityWoolColorizer tile = ((ContainerWoolColorizer)this.inventorySlots).tileEntity;
             try {
                 int color = Integer.parseInt(this.hexField.getText(), 16);

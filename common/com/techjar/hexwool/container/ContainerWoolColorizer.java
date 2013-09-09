@@ -97,7 +97,7 @@ public class ContainerWoolColorizer extends Container {
                     return null;
                 }
             }
-            else if (Util.itemMatchesOre(stackInSlot, "blockWool")) {
+            else if (Util.canColorizeItem(stackInSlot)) {
                 if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
                     return null;
                 }
