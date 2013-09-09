@@ -43,21 +43,17 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     
     public boolean colorizeWool(int color) {
         ItemStack itemStack = inv[0];
-        if (itemStack != null && hasRequiredDyes(color) && Util.itemMatchesOre(itemStack, "blockWool")) {
-            if (itemStack.itemID == HexWool.idColoredWool && itemStack.hasTagCompound()) {
-                if (itemStack.getTagCompound().hasKey("color") && itemStack.getTagCompound().getInteger("color") == color) {
-                    inv[1] = itemStack;
-                    inv[0] = null;
-                    return true;
-                }
+        if (itemStack != null && hasRequiredDyes(color) && Util.canColorizeItem(itemStack)) {
+            if (Util.getItemHasColor(itemStack) && Util.getItemColor(itemStack) == color) {
+                inv[1] = itemStack;
+                inv[0] = null;
+                this.onInventoryChanged();
+                return true;
             }
             int amountMade = 0;
             if (inv[1] != null) {
                 if (inv[1].stackSize < 64) {
-                    if (itemStack.itemID != HexWool.idColoredWool) itemStack.itemID = HexWool.idColoredWool;
-                    itemStack.setItemDamage(0);
-                    if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
-                    itemStack.getTagCompound().setInteger("color", color);
+                    itemStack = Util.colorizeItem(itemStack, color);
                     
                     if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
                         if (itemStack.stackSize + inv[1].stackSize > 64) {
@@ -93,17 +89,15 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
                     blackDye -= black;
                     dyesChanged = true;
                     
-                    itemStack.stackSize--;
+                    inv[0].stackSize--;
                     if (inv[1] != null) inv[1].stackSize++;
                     else {
-                        inv[1] = new ItemStack(HexWool.blockColoredWool);
-                        inv[1].setTagCompound(new NBTTagCompound("tag"));
-                        inv[1].getTagCompound().setInteger("color", color);
+                        inv[1] = Util.colorizeItem(inv[0], color);
+                        inv[1].stackSize = 1;
                     }
-                    
-                    if (itemStack.stackSize < 1) inv[0] = null;
                 }
-                worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+                if (inv[0].stackSize < 1) inv[0] = null;
+                this.onInventoryChanged();
                 return true;
             }
         }
@@ -205,7 +199,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     @Override
     public boolean isStackValidForSlot(int slot, ItemStack itemStack) {
         switch (slot) {
-            case 0: return Util.itemMatchesOre(itemStack, "blockWool");
+            case 0: return Util.canColorizeItem(itemStack);
             case 1: return false;
             case 2: return Util.itemMatchesOre(itemStack, "dyeCyan");
             case 3: return Util.itemMatchesOre(itemStack, "dyeMagenta");
@@ -218,6 +212,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     @Override
     public void onInventoryChanged() {
         super.onInventoryChanged();
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override
@@ -333,13 +328,27 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        this.writeToNBT(tagCompound);
+        tagCompound.setString("colorCode", colorCode);
+        for (int i = 0; i < 2; i++) {
+            NBTTagCompound tag = new NBTTagCompound();
+            if (inv[i] != null) {
+                inv[i].writeToNBT(tag);
+            } else tag.setShort("id", (short)0);
+            tagCompound.setCompoundTag(i == 0 ? "input" : "output", tag);
+        }
         return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, tagCompound);
     }
     
     @Override
     public void onDataPacket(INetworkManager network, Packet132TileEntityData packet) {
-        this.readFromNBT(packet.customParam1);
+        NBTTagCompound tagCompound = packet.customParam1;
+        colorCode = tagCompound.getString("colorCode");
+        NBTTagCompound tag = tagCompound.getCompoundTag("input");
+        if (tag.getShort("id") != 0) inv[0] = ItemStack.loadItemStackFromNBT(tag);
+        else inv[0] = null;
+        tag = tagCompound.getCompoundTag("output");
+        if (tag.getShort("id") != 0) inv[1] = ItemStack.loadItemStackFromNBT(tag);
+        else inv[1] = null;
     }
 
     //*** Begin ComputerCraft Integration ***//

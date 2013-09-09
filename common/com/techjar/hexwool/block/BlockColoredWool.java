@@ -51,11 +51,6 @@ public class BlockColoredWool extends Block {
         this.blockIcon = iconRegister.registerIcon("cloth_0");
     }
     
-    /*@SideOnly(Side.CLIENT)
-    public int getRenderColor(int meta) {
-        return mostRecentColor;
-    }*/
-    
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
     {

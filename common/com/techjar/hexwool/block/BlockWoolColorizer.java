@@ -2,6 +2,7 @@ package com.techjar.hexwool.block;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.techjar.hexwool.ClientProxy;
@@ -20,6 +21,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -27,9 +29,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 
 public class BlockWoolColorizer extends Block {
     private final Random random = new Random();
@@ -87,6 +91,11 @@ public class BlockWoolColorizer extends Block {
     public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
         return true;
     }
+    
+    @Override
+    public boolean isBlockSolidOnSide(World world, int x, int y, int z, ForgeDirection side) {
+        return side != ForgeDirection.UP;
+    }
 
     @Override
     public boolean hasTileEntity(int meta) {
@@ -137,21 +146,4 @@ public class BlockWoolColorizer extends Block {
 
         super.breakBlock(par1World, par2, par3, par4, par5, par6);
     }
-    
-    /*@Override
-    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int meta, int fortune) {
-        ArrayList<ItemStack> drops = super.getBlockDropped(world, x, y, z, meta, fortune);
-        
-        TileEntity tile = world.getBlockTileEntity(x, y, z);
-        if (tile instanceof TileEntityWoolColorizer) {
-            IInventory inventory = (IInventory)tile;
-            for (int i = 0; i < inventory.getSizeInventory(); i++) {
-                ItemStack itemStack = inventory.getStackInSlot(i);
-                if (itemStack != null && itemStack.stackSize > 0) {
-                    drops.add(itemStack.copy());
-                }
-            }
-        }
-        return drops;
-    }*/
 }

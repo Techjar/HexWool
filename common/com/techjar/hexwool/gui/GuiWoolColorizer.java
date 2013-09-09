@@ -107,7 +107,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     
     private void validateColorization() {
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
-        if (itemStack != null && Util.itemMatchesOre(itemStack, "blockWool") && this.hexField.getText().length() == 6) {
+        if (itemStack != null && Util.canColorizeItem(itemStack) && this.hexField.getText().length() == 6) {
             TileEntityWoolColorizer tile = ((ContainerWoolColorizer)this.inventorySlots).tileEntity;
             try {
                 int color = Integer.parseInt(this.hexField.getText(), 16);
