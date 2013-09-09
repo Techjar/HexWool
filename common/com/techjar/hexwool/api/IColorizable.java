@@ -2,6 +2,11 @@ package com.techjar.hexwool.api;
 
 import net.minecraft.item.ItemStack;
 
+/**
+ * Implement this on your Block or Item class to make it colorizable.
+ * @author Techjar
+ *
+ */
 public interface IColorizable {
     /**
      * Returns <em>true</em> if the ItemStack has a color explicitly set, <em>false</em> otherwise.
