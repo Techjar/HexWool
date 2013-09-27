@@ -81,6 +81,7 @@ public class Util {
         itemStack = itemStack.copy();
         if (itemStack.itemID >= 298 && itemStack.itemID <= 301) {
             if (!itemStack.hasTagCompound()) itemStack.setTagCompound(new NBTTagCompound("tag"));
+            if (!itemStack.getTagCompound().hasKey("display")) itemStack.getTagCompound().setCompoundTag("display", new NBTTagCompound());
             itemStack.getTagCompound().getCompoundTag("display").setInteger("color", color);
         }
         if (itemMatchesOre(itemStack, "blockWool")) {
