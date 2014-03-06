@@ -60,7 +60,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     protected void drawGuiContainerForegroundLayer(int param1, int param2) {
         GL11.glDisable(GL11.GL_LIGHTING);
-        fontRenderer.drawString(StatCollector.translateToLocal("hexwool.block.woolColorizer"), 8, 6, 4210752);
+        fontRenderer.drawString(StatCollector.translateToLocal("tile.hexwool.block.woolColorizer.name"), 8, 6, 4210752);
         TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
         if (tile.cyanDye > 0) this.drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, Util.rgbaToColor(0, 255, 255, 255));
         if (tile.magentaDye > 0) this.drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, Util.rgbaToColor(255, 0, 255, 255));

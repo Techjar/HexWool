@@ -3,5 +3,5 @@ hexwool.string.colorizeButton=Colorize
 hexwool.string.colorText=Color
 
 // Blocks
-tile.hexwool.block.woolColorizer=Wool Colorizer
-tile.hexwool.block.coloredWool=Colored Wool
+tile.hexwool.block.woolColorizer.name=Wool Colorizer
+tile.hexwool.block.coloredWool.name=Colored Wool
