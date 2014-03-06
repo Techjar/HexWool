@@ -1,11 +1,7 @@
-language.name=English
-language.region=US
-language.code=en_US
-
 // Various Strings
 hexwool.string.colorizeButton=Colorize
 hexwool.string.colorText=Color
 
 // Blocks
-hexwool.block.woolColorizer=Wool Colorizer
-hexwool.block.coloredWool=Colored Wool
+tile.hexwool.block.woolColorizer=Wool Colorizer
+tile.hexwool.block.coloredWool=Colored Wool
