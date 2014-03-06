@@ -1,0 +1,11 @@
+language.name=Deutsch
+language.region=Deutschland
+language.code=de_DE
+
+// Various Strings
+hexwool.string.colorizeButton=Färben
+hexwool.string.colorText=Farbe
+
+// Blocks
+hexwool.block.woolColorizer=Wollfärber
+hexwool.block.coloredWool=Gefärbte Wolle
