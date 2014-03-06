@@ -42,7 +42,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public void initGui() {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
-        buttonList.add(this.colorizeBtn = new GuiButton(1, this.guiLeft + 85, this.guiTop + 42, 83, 20, "Colorize"));
+        buttonList.add(this.colorizeBtn = new GuiButton(1, this.guiLeft + 85, this.guiTop + 42, 83, 20, StatCollector.translateToLocal("hexwool.string.colorizeButton")));
         colorizeBtn.enabled = false;
         hexField = new GuiTextField(fontRenderer, this.guiLeft + 85, this.guiTop + 17, 83, 20);
         hexField.setMaxStringLength(6);
@@ -60,7 +60,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     protected void drawGuiContainerForegroundLayer(int param1, int param2) {
         GL11.glDisable(GL11.GL_LIGHTING);
-        fontRenderer.drawString("Wool Colorizer", 8, 6, 4210752);
+        fontRenderer.drawString(StatCollector.translateToLocal("hexwool.block.woolColorizer"), 8, 6, 4210752);
         TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
         if (tile.cyanDye > 0) this.drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, Util.rgbaToColor(0, 255, 255, 255));
         if (tile.magentaDye > 0) this.drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, Util.rgbaToColor(255, 0, 255, 255));
@@ -73,7 +73,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.func_110577_a(new ResourceLocation("hexwool", "textures/gui/wool_colorizer.png"));
+        this.mc.renderEngine.bindTexture(new ResourceLocation("hexwool", "textures/gui/wool_colorizer.png"));
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);

@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 
 public class ItemBlockColoredWool extends ItemBlock {
     public ItemBlockColoredWool(int par1) {
@@ -22,7 +23,7 @@ public class ItemBlockColoredWool extends ItemBlock {
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean par4) {
         if (itemStack.hasTagCompound()) {
             int color = itemStack.getTagCompound().getInteger("color");
-            list.add("Color: #" + Util.colorToHex(color));
+            list.add(StatCollector.translateToLocal("hexwool.string.colorText") + ": #" + Util.colorToHex(color));
         }
     }
     

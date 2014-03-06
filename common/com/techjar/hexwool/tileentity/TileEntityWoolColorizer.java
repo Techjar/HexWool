@@ -8,6 +8,7 @@ import com.techjar.hexwool.Util.CMYKColor;
 import com.techjar.hexwool.container.ContainerWoolColorizer;
 import com.techjar.hexwool.network.packet.PacketGuiAction;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
@@ -29,6 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
+@Optional.Interface(iface = "dan200.computer.api.IPeripheral", modid = "ComputerCraft")
 public class TileEntityWoolColorizer extends TileEntity implements IInventory, ISidedInventory, IPeripheral {
     public String colorCode = "";
     public int cyanDye;
@@ -342,7 +344,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     
     @Override
     public void onDataPacket(INetworkManager network, Packet132TileEntityData packet) {
-        NBTTagCompound tagCompound = packet.customParam1;
+        NBTTagCompound tagCompound = packet.data;
         colorCode = tagCompound.getString("colorCode");
         NBTTagCompound tag = tagCompound.getCompoundTag("input");
         if (tag.getShort("id") != 0) inv[0] = ItemStack.loadItemStackFromNBT(tag);
@@ -354,16 +356,19 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 
     //*** Begin ComputerCraft Integration ***//
     @Override
+    @Optional.Method(modid = "ComputerCraft")
     public String getType() {
         return "wool_colorizer";
     }
 
     @Override
+    @Optional.Method(modid = "ComputerCraft")
     public String[] getMethodNames() {
         return new String[]{ "getHexCode", "setHexCode", "getCyanDye", "getMagentaDye", "getYellowDye", "getBlackDye" };
     }
 
     @Override
+    @Optional.Method(modid = "ComputerCraft")
     public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
         switch(method) {
             case 0: return new Object[]{ colorCode };
@@ -384,16 +389,19 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     }
 
     @Override
+    @Optional.Method(modid = "ComputerCraft")
     public boolean canAttachToSide(int side) {
         return true;
     }
 
     @Override
+    @Optional.Method(modid = "ComputerCraft")
     public void attach(IComputerAccess computer) {
         // whatever
     }
 
     @Override
+    @Optional.Method(modid = "ComputerCraft")
     public void detach(IComputerAccess computer) {
         // whatever
     }

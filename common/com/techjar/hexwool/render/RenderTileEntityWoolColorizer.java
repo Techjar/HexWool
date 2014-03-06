@@ -81,7 +81,7 @@ public class RenderTileEntityWoolColorizer extends TileEntitySpecialRenderer {
                 try {
                     RGBColor color = Util.colorToRgb(Integer.parseInt(tile.colorCode, 16));
                     GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, 1.0F);
-                    mc.renderEngine.func_110577_a(new ResourceLocation("hexwool", "textures/blocks/wool_colorizer_dye.png"));
+                    mc.renderEngine.bindTexture(new ResourceLocation("hexwool", "textures/blocks/wool_colorizer_dye.png"));
                     Tessellator tessellator = Tessellator.instance;
                     tessellator.startDrawingQuads();
                     tessellator.addVertexWithUV(0.25D, 0.9375D, 0.75D, 0.0D, 1.0D);

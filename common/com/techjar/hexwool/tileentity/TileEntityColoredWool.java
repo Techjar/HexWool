@@ -35,6 +35,6 @@ public class TileEntityColoredWool extends TileEntity {
     
     @Override
     public void onDataPacket(INetworkManager network, Packet132TileEntityData packet) {
-        this.readFromNBT(packet.customParam1);
+        this.readFromNBT(packet.data);
     }
 }
