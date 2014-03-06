@@ -12,6 +12,7 @@ import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
@@ -37,8 +38,11 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     public int magentaDye;
     public int yellowDye;
     public int blackDye;
+    public boolean colorizing;
+    public int ticks;
     public boolean dyesChanged;
     private ItemStack[] inv;
+    private ItemStack hiddenStack;
     
     public TileEntityWoolColorizer() {
         inv = new ItemStack[6];
@@ -46,62 +50,115 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     
     public boolean colorizeWool(int color) {
         ItemStack itemStack = inv[0];
-        if (itemStack != null && hasRequiredDyes(color) && Util.canColorizeItem(itemStack)) {
-            if (Util.getItemHasColor(itemStack) && Util.getItemColor(itemStack) == color) {
-                inv[1] = itemStack;
-                inv[0] = null;
-                this.onInventoryChanged();
-                return true;
-            }
-            int amountMade = 0;
-            if (inv[1] != null) {
-                if (inv[1].stackSize < 64) {
-                    itemStack = Util.colorizeItem(itemStack, color);
-                    
-                    if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
-                        if (itemStack.stackSize + inv[1].stackSize > 64) {
-                            amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - 64);
-                        }
-                        else {
-                            amountMade = itemStack.stackSize;
-                        }
-                    }
-                }
-            }
-            else {
-                amountMade = itemStack.stackSize;
-            }
-            
-            if (amountMade > 0) {
-                int[] dyes = getRequiredDyes(color);
-                int cyan = dyes[0];
-                int magenta = dyes[1];
-                int yellow = dyes[2];
-                int black = dyes[3];
-                outer: for (int i = 0; i < amountMade; i++) {
-                    for (int j = 0; j < 2; j++) {
-                        if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
-                            if (j == 1) break outer;
-                            if (checkDyes()) break;
-                        }
-                    }
-                    
-                    cyanDye -= cyan;
-                    magentaDye -= magenta;
-                    yellowDye -= yellow;
-                    blackDye -= black;
-                    dyesChanged = true;
-                    
-                    inv[0].stackSize--;
-                    if (inv[1] != null) inv[1].stackSize++;
-                    else {
-                        inv[1] = Util.colorizeItem(inv[0], color);
-                        inv[1].stackSize = 1;
-                    }
-                }
-                if (inv[0].stackSize < 1) inv[0] = null;
-                this.onInventoryChanged();
-                return true;
+        if (!HexWool.creative) {
+	        if (itemStack != null && hasRequiredDyes(color) && Util.canColorizeItem(itemStack)) {
+	            if (Util.getItemHasColor(itemStack) && Util.getItemColor(itemStack) == color) {
+	            	if (inv[1] == null) {
+		            	inv[1] = itemStack;
+		                inv[0] = null;
+		                this.onInventoryChanged();
+		                return true;
+	            	} else {
+		            	int maxStack = inv[1].getMaxStackSize();
+		            	if (inv[1].stackSize < maxStack) {
+		                    itemStack = Util.colorizeItem(itemStack, color);
+		                    
+		                    if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
+		                        int amountMade;
+		                    	if (itemStack.stackSize + inv[1].stackSize > maxStack) {
+		                            amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - maxStack);
+		                        } else {
+		                            amountMade = itemStack.stackSize;
+		                        }
+		                    	
+		                    	inv[1].stackSize += amountMade;
+		    	                inv[0].stackSize -= amountMade;
+		    	                if (inv[0].stackSize < 1) inv[0] = null;
+		    	                this.onInventoryChanged();
+		    	                return true;
+		                    }
+		                }
+	            	}
+	            }
+	            int amountMade = 0;
+	            if (inv[1] != null) {
+	            	int maxStack = inv[1].getMaxStackSize();
+	                if (inv[1].stackSize < maxStack) {
+	                    itemStack = Util.colorizeItem(itemStack, color);
+	                    
+	                    if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
+	                        if (itemStack.stackSize + inv[1].stackSize > maxStack) {
+	                            amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - maxStack);
+	                        } else {
+	                            amountMade = itemStack.stackSize;
+	                        }
+	                    }
+	                }
+	            } else {
+	                amountMade = itemStack.stackSize;
+	            }
+	            
+	            if (amountMade > 0) {
+	                int[] dyes = getRequiredDyes(color);
+	                int cyan = dyes[0];
+	                int magenta = dyes[1];
+	                int yellow = dyes[2];
+	                int black = dyes[3];
+	                outer: for (int i = 0; i < amountMade; i++) {
+	                    for (int j = 0; j < 2; j++) {
+	                        if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
+	                            if (j == 1) break outer;
+	                            if (checkDyes()) break;
+	                        }
+	                    }
+	                    
+	                    cyanDye -= cyan;
+	                    magentaDye -= magenta;
+	                    yellowDye -= yellow;
+	                    blackDye -= black;
+	                    dyesChanged = true;
+	                    
+	                    inv[0].stackSize--;
+	                    if (hiddenStack != null) hiddenStack.stackSize++;
+	                    else {
+	                    	hiddenStack = Util.colorizeItem(inv[0], color);
+	                    	hiddenStack.stackSize = 1;
+	                    }
+	                }
+	                if (inv[0].stackSize < 1) inv[0] = null;
+	                this.colorizing = true;
+	                this.onInventoryChanged();
+	                return true;
+	            }
+	        }
+        } else {
+        	if (itemStack != null && Util.canColorizeItem(itemStack)) {
+        		if (inv[1] == null) {
+	                inv[1] = Util.colorizeItem(itemStack, color);
+	                inv[0] = null;
+	                this.onInventoryChanged();
+	                return true;
+        		} else {
+        			int maxStack = inv[1].getMaxStackSize();
+        			if (inv[1].stackSize < maxStack) {
+	                    itemStack = Util.colorizeItem(itemStack, color);
+	                    
+	                    if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
+	                        int amountMade;
+	                    	if (itemStack.stackSize + inv[1].stackSize > maxStack) {
+	                            amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - maxStack);
+	                        } else {
+	                            amountMade = itemStack.stackSize;
+	                        }
+	                    	
+	                    	inv[1].stackSize += amountMade;
+	    	                inv[0].stackSize -= amountMade;
+	    	                if (inv[0].stackSize < 1) inv[0] = null;
+	    	                this.onInventoryChanged();
+	    	                return true;
+	                    }
+	                }
+        		}
             }
         }
         return false;
@@ -123,6 +180,11 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
             return false;
         }
         return true;
+    }
+    
+    @SideOnly(Side.CLIENT)
+    public int getProgressScaled(int scale) {
+    	return this.ticks * scale / HexWool.colorizingTicks;
     }
 
     @Override
@@ -171,7 +233,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 
     @Override
     public String getInvName() {
-        return "Wool Colorizer";
+        return "tile.hexwool.block.woolColorizer.name";
     }
 
     @Override
@@ -214,8 +276,8 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     
     @Override
     public void onInventoryChanged() {
-        super.onInventoryChanged();
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        super.onInventoryChanged();
     }
 
     @Override
@@ -248,13 +310,24 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     public void updateEntity() {
         super.updateEntity();
         checkDyes();
-        if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
+        if (!colorizing && worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
             if (colorCode.length() == 6) {
                 try {
                     int color = Integer.parseInt(colorCode, 16);
                     if (hasRequiredDyes(color)) colorizeWool(color);
                 } catch (NumberFormatException ex) {}
             }
+        }
+        if (colorizing) {
+        	this.ticks++;
+        	if (this.ticks >= HexWool.colorizingTicks) {
+        		this.ticks = 0;
+        		this.colorizing = false;
+        		if (inv[1] == null) inv[1] = hiddenStack;
+        		else inv[1].stackSize += hiddenStack.stackSize;
+        		hiddenStack = null;
+        		this.onInventoryChanged();
+        	}
         }
     }
     
@@ -295,6 +368,8 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
         magentaDye = tagCompound.getInteger("magentaDye");
         yellowDye = tagCompound.getInteger("yellowDye");
         blackDye = tagCompound.getInteger("blackDye");
+        if (tagCompound.hasKey("colorizing")) colorizing = tagCompound.getBoolean("colorizing");
+        if (tagCompound.hasKey("hiddenStack")) hiddenStack = ItemStack.loadItemStackFromNBT(tagCompound.getCompoundTag("hiddenStack"));
         
         NBTTagList tagList = tagCompound.getTagList("Inventory");
         for (int i = 0; i < tagList.tagCount(); i++) {
@@ -314,6 +389,12 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
         tagCompound.setInteger("magentaDye", magentaDye);
         tagCompound.setInteger("yellowDye", yellowDye);
         tagCompound.setInteger("blackDye", blackDye);
+        tagCompound.setBoolean("colorizing", colorizing);
+        if (hiddenStack != null) {
+	        NBTTagCompound tag = new NBTTagCompound();
+	        hiddenStack.writeToNBT(tag);
+	        tagCompound.setCompoundTag("hiddenStack", tag);
+	    }
 
         NBTTagList itemList = new NBTTagList();
         for (int i = 0; i < inv.length; i++) {
@@ -332,6 +413,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     public Packet getDescriptionPacket() {
         NBTTagCompound tagCompound = new NBTTagCompound();
         tagCompound.setString("colorCode", colorCode);
+        tagCompound.setBoolean("colorizing", colorizing);
         for (int i = 0; i < 2; i++) {
             NBTTagCompound tag = new NBTTagCompound();
             if (inv[i] != null) {
@@ -346,6 +428,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
     public void onDataPacket(INetworkManager network, Packet132TileEntityData packet) {
         NBTTagCompound tagCompound = packet.data;
         colorCode = tagCompound.getString("colorCode");
+        colorizing = tagCompound.getBoolean("colorizing");
         NBTTagCompound tag = tagCompound.getCompoundTag("input");
         if (tag.getShort("id") != 0) inv[0] = ItemStack.loadItemStackFromNBT(tag);
         else inv[0] = null;

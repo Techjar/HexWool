@@ -32,9 +32,11 @@ import org.lwjgl.opengl.GL11;
 public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public GuiButton colorizeBtn;
     public GuiTextField hexField;
+    public TileEntityWoolColorizer tileEntity;
 
     public GuiWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
         super(new ContainerWoolColorizer(inventoryPlayer, tile));
+        this.tileEntity = tile;
         this.ySize = 153;
     }
 
@@ -60,8 +62,8 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     @Override
     protected void drawGuiContainerForegroundLayer(int param1, int param2) {
         GL11.glDisable(GL11.GL_LIGHTING);
-        fontRenderer.drawString(StatCollector.translateToLocal("tile.hexwool.block.woolColorizer.name"), 8, 6, 4210752);
-        TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
+        fontRenderer.drawString(StatCollector.translateToLocal(this.tileEntity.getInvName()), 8, 6, 4210752);
+        TileEntityWoolColorizer tile = this.tileEntity;
         if (tile.cyanDye > 0) this.drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, Util.rgbaToColor(0, 255, 255, 255));
         if (tile.magentaDye > 0) this.drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, Util.rgbaToColor(255, 0, 255, 255));
         if (tile.yellowDye > 0) this.drawRect(45, 43, 45 + (int)(14 * (tile.yellowDye / 1000.0F)), 45, Util.rgbaToColor(255, 255, 0, 255));
@@ -77,6 +79,8 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        int scale = this.tileEntity.getProgressScaled(16);
+        this.drawTexturedModalRect(x + 35, y + 22, 176, 0, scale + 1, 13);
         hexField.drawTextBox();
     }
     
@@ -95,7 +99,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     public void keyTyped(char par1, int par2) {
         if (hexField.textboxKeyTyped(par1, par2)) {
             try {
-                TileEntityWoolColorizer tile = ((ContainerWoolColorizer)inventorySlots).tileEntity;
+                TileEntityWoolColorizer tile = this.tileEntity;
                 tile.colorCode = hexField.getText();
                 tile.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
                 PacketDispatcher.sendPacketToServer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, hexField.getText()).getPacket());
@@ -107,9 +111,17 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
     }
     
     private void validateColorization() {
+    	if (this.tileEntity.colorizing) {
+    		this.colorizeBtn.enabled = false;
+    		return;
+    	}
+    	if (HexWool.creative) {
+    		this.colorizeBtn.enabled = true;
+    		return;
+    	}
         ItemStack itemStack = this.inventorySlots.getSlot(0).getStack();
         if (itemStack != null && Util.canColorizeItem(itemStack) && this.hexField.getText().length() == 6) {
-            TileEntityWoolColorizer tile = ((ContainerWoolColorizer)this.inventorySlots).tileEntity;
+            TileEntityWoolColorizer tile = this.tileEntity;
             try {
                 int color = Integer.parseInt(this.hexField.getText(), 16);
                 this.colorizeBtn.enabled = tile.hasRequiredDyes(color);

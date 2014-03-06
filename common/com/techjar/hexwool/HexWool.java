@@ -35,6 +35,8 @@ public class HexWool {
     public static int idWoolColorizer;
     public static int dyePerWool;
     public static int dyePerItem;
+    public static int colorizingTicks;
+    public static boolean creative;
     public static BlockColoredWool blockColoredWool;
     public static BlockWoolColorizer blockWoolColorizer;
 
@@ -50,8 +52,10 @@ public class HexWool {
          config.load();
          idColoredWool = config.getBlock("coloredWool", 3540).getInt();
          idWoolColorizer = config.getBlock("woolColorizer", 3541).getInt();
-         dyePerWool = config.get(Configuration.CATEGORY_GENERAL, "dyePerWool", 25, "Millibuckets of dye used per wool. Default: 25").getInt();
-         dyePerItem = config.get(Configuration.CATEGORY_GENERAL, "dyePerItem", 250, "Millibuckets of dye given per dye item. Default: 250").getInt();
+         dyePerWool = config.get(Configuration.CATEGORY_GENERAL, "dyePerWool", 25, "Millibuckets of dye used per wool. Default: 25").getInt(25);
+         dyePerItem = config.get(Configuration.CATEGORY_GENERAL, "dyePerItem", 250, "Millibuckets of dye given per dye item. Default: 250").getInt(250);
+         colorizingTicks = config.get(Configuration.CATEGORY_GENERAL, "colorizingTicks", 40, "Number of ticks it takes to colorize something. Default: 40").getInt(40);
+         creative = config.get(Configuration.CATEGORY_GENERAL, "creative", false, "Enable this for no dye requirement and instant dyeing. Default: false").getBoolean(false);
          if (config.hasChanged()) config.save();
     }
 
@@ -63,6 +67,7 @@ public class HexWool {
         // IMCs
         FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", "com.techjar.hexwool.tileentity.TileEntityColoredWool");
         FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", "com.techjar.hexwool.tileentity.TileEntityWoolColorizer");
+        FMLInterModComms.sendMessage("Waila", "register", "com.techjar.hexwool.WailaDataProvider.callbackRegister");
         
         // Blocks and Tile Entities
         GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");

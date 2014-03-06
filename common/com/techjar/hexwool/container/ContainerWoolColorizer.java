@@ -22,6 +22,7 @@ public class ContainerWoolColorizer extends Container {
     public TileEntityWoolColorizer tileEntity;
     public Player lastEditor;
     private String oldColorCode = "";
+    private int lastTicks;
     
     public ContainerWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
         tileEntity = tile;
@@ -32,6 +33,12 @@ public class ContainerWoolColorizer extends Container {
             addSlotToContainer(new SlotColorizer(tileEntity, i + 2, 8 + i * 18, 47));
         }
         bindPlayerInventory(inventoryPlayer);
+    }
+    
+    @Override
+    public void addCraftingToCrafters(ICrafting par1ICrafting) {
+        super.addCraftingToCrafters(par1ICrafting);
+        par1ICrafting.sendProgressBarUpdate(this, 0, this.tileEntity.ticks);
     }
 
     @Override
@@ -68,6 +75,21 @@ public class ContainerWoolColorizer extends Container {
                     } catch (IOException ex) { ex.printStackTrace(); }
                 }
             }
+        }
+        
+        if (this.lastTicks != this.tileEntity.ticks) {
+        	this.lastTicks = this.tileEntity.ticks;
+	        for (int i = 0; i < this.crafters.size(); ++i) {
+	            ICrafting crafter = (ICrafting)this.crafters.get(i);
+	            crafter.sendProgressBarUpdate(this, 0, this.tileEntity.ticks);
+	        }
+        }
+    }
+    
+    @SideOnly(Side.CLIENT)
+    public void updateProgressBar(int par1, int par2) {
+        if (par1 == 0) {
+        	this.tileEntity.ticks = par2;
         }
     }
 

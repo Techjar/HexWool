@@ -7,12 +7,12 @@
 	<target name="clean" if="build.isdirty">
 		<!-- <delete file="${build.dir.development}/forge/mcp/src/minecraft/mcmod.info" />
 		<delete dir="${build.dir.development}/forge/mcp/src/minecraft/com/techjar" /> -->
-		<delete includeEmptyDirs="true">
+		<!-- <delete includeEmptyDirs="true">
 		   <fileset dir="${build.dir.development}/forge/mcp/src" includes="**/*" />
 		</delete>
 		<move todir="${build.dir.development}/forge/mcp/src">
 			<fileset dir="${build.dir.development}/forge/mcp/src_backup" />
-		</move>
+		</move> -->
 		<delete dir="${build.dir.development}/forge/mcp/reobf/minecraft" />
 	</target>
 
@@ -23,9 +23,9 @@
 	</target>
 
 	<target name="prep">
-		<copy todir="${build.dir.development}/forge/mcp/src_backup">
+		<!-- <copy todir="${build.dir.development}/forge/mcp/src_backup">
 			<fileset dir="${build.dir.development}/forge/mcp/src" />
-		</copy>
+		</copy> -->
 		<copy todir="${build.dir.development}/forge/mcp/src/minecraft">
 			<fileset dir="${build.dir.development}/source/${build.dir.modproject}/${build.dir.modsrc}/" />
 			<fileset file="${build.dir.development}/source/${build.dir.modproject}/mcmod.info" />
