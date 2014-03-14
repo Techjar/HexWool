@@ -81,7 +81,7 @@ public class HexWool {
         OreDictionary.registerOre("blockWool", new ItemStack(blockColoredWool, 1, OreDictionary.WILDCARD_VALUE));
         
         // Recipes
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockWoolColorizer), "iwi", "wdw", "iwi", 'w', "blockWool", 'i', new ItemStack(Item.ingotIron), 'd', new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE)));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockWoolColorizer), "ibi", "www", "iwi", 'w', "blockWool", 'i', new ItemStack(Item.ingotIron), 'b', new ItemStack(Item.bowlEmpty)));
         
         // Localization
         //LanguageRegistry.addName(Block.blocksList[idColoredWool], "Colored Wool");

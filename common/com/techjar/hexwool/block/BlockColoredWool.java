@@ -27,12 +27,12 @@ import net.minecraft.world.World;
 public class BlockColoredWool extends Block {
     //public static int mostRecentColor;
     
-    public BlockColoredWool(int id) {
-        super(id, Material.cloth);
+    public BlockColoredWool() {
+        super(Material.cloth);
         this.setHardness(0.8F);
-        this.setStepSound(soundClothFootstep);
+        this.setStepSound(soundTypeCloth);
         //this.setCreativeTab(CreativeTabs.tabBlock);
-        this.setUnlocalizedName("hexwool.block.coloredWool");
+        this.setBlockName("coloredWool");
     }
 
     @Override
