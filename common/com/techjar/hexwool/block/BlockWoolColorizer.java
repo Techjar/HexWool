@@ -45,7 +45,7 @@ public class BlockWoolColorizer extends Block {
         super(id, Material.iron);
         this.setHardness(1.0F);
         this.setStepSound(soundMetalFootstep);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.tabMisc);
         this.setUnlocalizedName("hexwool.block.woolColorizer");
     }
     
