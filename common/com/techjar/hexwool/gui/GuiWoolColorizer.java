@@ -49,6 +49,7 @@ public class GuiWoolColorizer extends GuiContainer /*implements ICrafting*/ {
         hexField = new GuiTextField(fontRenderer, this.guiLeft + 85, this.guiTop + 17, 83, 20);
         hexField.setMaxStringLength(6);
         ((SlotColorizer)this.inventorySlots.getSlot(0)).gui = this;
+        ((SlotColorizer)this.inventorySlots.getSlot(1)).gui = this;
         updateState();
     }
     

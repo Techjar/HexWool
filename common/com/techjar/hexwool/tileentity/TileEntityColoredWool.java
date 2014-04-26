@@ -29,12 +29,12 @@ public class TileEntityColoredWool extends TileEntity {
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        this.writeToNBT(tagCompound);
+        tagCompound.setInteger("color", color);
         return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, tagCompound);
     }
     
     @Override
     public void onDataPacket(INetworkManager network, Packet132TileEntityData packet) {
-        this.readFromNBT(packet.data);
+        color = packet.data.getInteger("color");
     }
 }
