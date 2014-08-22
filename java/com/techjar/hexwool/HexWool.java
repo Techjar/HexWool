@@ -72,8 +72,8 @@ public class HexWool {
         // Blocks and Tile Entities
         GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");
         GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, "HW_WoolColorizer");
-        GameRegistry.registerBlock(blockWoolColorizer = new BlockWoolColorizer(idWoolColorizer), "hexwool:wool_colorizer");
-        GameRegistry.registerBlock(blockColoredWool = new BlockColoredWool(idColoredWool), ItemBlockColoredWool.class, "hexwool:colored_wool");
+        GameRegistry.registerBlock(blockWoolColorizer = new BlockWoolColorizer(idWoolColorizer), "hwWoolColorizer");
+        GameRegistry.registerBlock(blockColoredWool = new BlockColoredWool(idColoredWool), ItemBlockColoredWool.class, "hwColoredWool");
         Block.setBurnProperties(idColoredWool, 30, 60);
         
         // Ore Dictionary
