@@ -17,7 +17,7 @@
     	</delete>
     </target>
 
-    <target name="increment_build_number">
+    <target name="increment_build_number" if="build.notjenkins">
         <propertyfile file="build_number.properties">
             <entry key="build_number" type="int" operation="+" default="1" />
         </propertyfile>
@@ -53,16 +53,19 @@
         <!-- Prep for the build -->
         <antcall target="clean" />
         <antcall target="prep" />
-        <antcall target="increment_build_number" />
+        <condition property="build.notjenkins">
+        	<isfalse value="${build.jenkins}" />
+        </condition>
+    	<antcall target="increment_build_number" />
     	<antcall target="replace_tokens" />
     	<replace file="${build.dir.development}/forge/build.gradle" token="@VERSION@" value="${build.minecraft.version}-${build.mod.version}.${build_number.build_number}" />
 
         <!-- Build the mod -->
     	<exec dir="${build.dir.development}/forge" executable="cmd" osfamily="windows">
-            <arg line="/c gradlew.bat build" />
+            <arg line="/c gradlew.bat build --stacktrace" />
         </exec>
         <exec dir="${build.dir.development}/forge" executable="bash" osfamily="unix">
-            <arg line="gradlew build" />
+            <arg line="gradlew build --stacktrace" />
         </exec>
     	
     	<!-- Copy built jar -->
