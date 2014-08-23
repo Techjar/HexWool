@@ -1,0 +1,12 @@
+dir.development=../../
+dir.build=../../build/HexWool/
+dir.modproject=HexWool
+mod.name=HexWool
+mod.id=HexWool
+minecraft.version=1.7.10
+mod.version=0.4.0
+mod.versionmask=0.4.*
+keystore.location=../../../keystore.jks
+keystore.alias=alias
+keystore.password=password
+jenkins=false

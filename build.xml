@@ -69,7 +69,7 @@
         </exec>
     	
     	<!-- Copy built jar -->
-    	<copy todir="${build.dir.development}/build/${build.dir.modproject}/">
+    	<copy todir="${build.dir.build}">
             <fileset file="${build.dir.development}/forge/build/libs/${build.mod.name}-${build.minecraft.version}-${build.mod.version}.${build_number.build_number}.jar" />
         </copy>
 
