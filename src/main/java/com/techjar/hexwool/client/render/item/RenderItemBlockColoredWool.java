@@ -14,7 +14,6 @@ public class RenderItemBlockColoredWool implements IItemRenderer {
 
 	@Override
 	public boolean handleRenderType(ItemStack itemStack, ItemRenderType type) {
-		System.out.println("fuck");
 		return type != ItemRenderType.FIRST_PERSON_MAP;
 	}
 
