@@ -2,6 +2,7 @@ package com.techjar.hexwool.proxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.INetHandler;
@@ -29,6 +30,7 @@ public class CommonProxy {
 	public void registerBlocks() {
 		GameRegistry.registerBlock(HexWoolBlocks.woolColorizer = new BlockWoolColorizer(), "hexwool:wool_colorizer");
 		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredWool(), ItemBlockColoredWool.class, "hexwool:colored_wool");
+		Blocks.fire.setFireInfo(HexWoolBlocks.coloredWool, 30, 60);
 	}
 
 	public void registerTileEntities() {
