@@ -46,7 +46,6 @@
 
     <target name="replace_tokens">
         <replace dir="${build.dir.development}/forge/src/main" token="@VERSION@" value="${mod.version}.${build_number.build_number}" />
-    	<replace dir="${build.dir.development}/forge/src/main" token="@VERSION_MASK@" value="${mod.versionmask}" />
         <replace dir="${build.dir.development}/forge/src/main" token="@BUILD_NUMBER@" value="${build_number.build_number}" />
     </target>
 

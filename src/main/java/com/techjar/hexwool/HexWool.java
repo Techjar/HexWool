@@ -20,12 +20,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
-@Mod(modid = "HexWool", name = "HexWool", version = "@VERSION@", dependencies = "required-after:Forge@[10.13.0.1206,)", acceptableRemoteVersions = "@VERSION_MASK@")
-// @NetworkMod(clientSideRequired = true, serverSideRequired = false,
-// clientPacketHandlerSpec = @NetworkMod.SidedPacketHandler(channels =
-// {"HexWool"}, packetHandler = PacketHandlerClient.class),
-// serverPacketHandlerSpec = @NetworkMod.SidedPacketHandler(channels =
-// {"HexWool"}, packetHandler = PacketHandlerServer.class))
+@Mod(modid = "HexWool", name = "HexWool", version = "@VERSION@", dependencies = "required-after:Forge@[10.13.0.1206,)", acceptableRemoteVersions = "@VERSION@.*")
 public class HexWool {
 	public static final String networkChannel = "HexWool";
 	public static int dyePerWool;
