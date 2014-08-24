@@ -17,7 +17,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
-public class ClientProxy extends CommonProxy {
+public class ProxyClient extends ProxyCommon {
 	private int renderIdWoolColorizer;
 
 	@Override
@@ -34,6 +34,14 @@ public class ClientProxy extends CommonProxy {
 		return -1;
 	}
 
+	@Override
+	public EntityPlayer getPlayerFromNetHandler(INetHandler netHandler) {
+		if (netHandler instanceof NetHandlerPlayServer) {
+			return ((NetHandlerPlayServer)netHandler).playerEntity;
+		}
+		return FMLClientHandler.instance().getClientPlayerEntity();
+	}
+
 	private void registerBlockRenderers() {
 		renderIdWoolColorizer = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(new RenderBlockWoolColorizer(renderIdWoolColorizer));
@@ -45,13 +53,5 @@ public class ClientProxy extends CommonProxy {
 
 	private void registerTileEntityRenderers() {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWoolColorizer.class, new RenderTileEntityWoolColorizer());
-	}
-
-	@Override
-	public EntityPlayer getPlayerFromNetHandler(INetHandler netHandler) {
-		if (netHandler instanceof NetHandlerPlayServer) {
-			return ((NetHandlerPlayServer)netHandler).playerEntity;
-		}
-		return FMLClientHandler.instance().getClientPlayerEntity();
 	}
 }

@@ -8,7 +8,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import com.techjar.hexwool.block.HexWoolBlocks;
 import com.techjar.hexwool.gui.GuiHandler;
 import com.techjar.hexwool.network.HexWoolChannelHandler;
-import com.techjar.hexwool.proxy.CommonProxy;
+import com.techjar.hexwool.proxy.ProxyCommon;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -31,8 +31,8 @@ public class HexWool {
 	@Instance("HexWool")
 	public static HexWool instance;
 
-	@SidedProxy(clientSide = "com.techjar.hexwool.proxy.ClientProxy", serverSide = "com.techjar.hexwool.proxy.CommonProxy")
-	public static CommonProxy proxy;
+	@SidedProxy(clientSide = "com.techjar.hexwool.proxy.ProxyClient", serverSide = "com.techjar.hexwool.proxy.ProxyCommon")
+	public static ProxyCommon proxy;
 
 	public static HexWoolChannelHandler packetPipeline;
 
@@ -54,24 +54,19 @@ public class HexWool {
 		packetPipeline = HexWoolChannelHandler.init();
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 
-		// IMCs
-		FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", "com.techjar.hexwool.tileentity.TileEntityColoredWool");
-		FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", "com.techjar.hexwool.tileentity.TileEntityWoolColorizer");
-		FMLInterModComms.sendMessage("Waila", "register", "com.techjar.hexwool.integration.WailaDataProvider.callbackRegister");
-
 		// Blocks and Tile Entities
 		proxy.registerBlocks();
 		proxy.registerTileEntities();
 
-		// Ore Dictionary
-		OreDictionary.registerOre("cloth", new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE));
-		OreDictionary.registerOre("cloth", new ItemStack(HexWoolBlocks.coloredWool, 1, OreDictionary.WILDCARD_VALUE));
-
-		// Recipes
+		// Ore Dictionary and Recipes
+		proxy.registerOres();
 		proxy.registerRecipes();
 
-		// Register renders (client only, duh!)
+		// Renders (client only, duh!)
 		proxy.registerRenderers();
+
+		// IMCs
+		proxy.fireInterModComms();
 	}
 
 	@EventHandler
