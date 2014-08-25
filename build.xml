@@ -5,16 +5,16 @@
     <property file="build_number.properties" prefix="build_number" />
 
     <target name="clean">
-    	<exec dir="${build.dir.development}/forge" executable="cmd" osfamily="windows">
+    	<exec dir="${build.dir.forge}" executable="cmd" osfamily="windows">
             <arg line="/c gradlew.bat clean" />
         </exec>
-        <exec dir="${build.dir.development}/forge" executable="bash" osfamily="unix">
+        <exec dir="${build.dir.forge}" executable="bash" osfamily="unix">
             <arg line="gradlew clean" />
         </exec>
         <delete includeEmptyDirs="true">
-            <fileset dir="${build.dir.development}/forge/src/main/java" includes="**/*" defaultexcludes="no" />
-        	<fileset dir="${build.dir.development}/forge/src/main/resources" includes="**/*" defaultexcludes="no" />
-        	<fileset dir="${build.dir.development}/forge/dependencies" includes="**/*" defaultexcludes="no" />
+            <fileset dir="${build.dir.forge}/src/main/java" includes="**/*" defaultexcludes="no" />
+        	<fileset dir="${build.dir.forge}/src/main/resources" includes="**/*" defaultexcludes="no" />
+        	<fileset dir="${build.dir.forge}/dependencies" includes="**/*" defaultexcludes="no" />
     	</delete>
     </target>
 
@@ -29,48 +29,51 @@
     </target>
 
     <target name="prep">
-        <copy todir="${build.dir.development}/forge/src/main/java">
-            <fileset dir="${build.dir.development}/source/${build.dir.modproject}/src/main/java" />
+        <copy todir="${build.dir.forge}/src/main/java">
+            <fileset dir="${build.dir.source}/src/main/java" />
         </copy>
-        <copy todir="${build.dir.development}/forge/src/main/resources">
-            <fileset dir="${build.dir.development}/source/${build.dir.modproject}/src/main/resources">
+        <copy todir="${build.dir.forge}/src/main/resources">
+            <fileset dir="${build.dir.source}/src/main/resources">
             	<exclude name="**/*.psd" />
             </fileset>
         </copy>
-    	<copy todir="${build.dir.development}/forge/dependencies">
-            <fileset dir="${build.dir.development}/source/${build.dir.modproject}/dependencies" />
+    	<copy todir="${build.dir.forge}/dependencies">
+            <fileset dir="${build.dir.source}/dependencies" />
         </copy>
-        <delete file="${build.dir.development}/forge/build.gradle" />
-    	<copy file="${build.dir.development}/source/${build.dir.modproject}/build.gradle" todir="${build.dir.development}/forge" />
+        <delete file="${build.dir.forge}/build.gradle" />
+    	<copy file="${build.dir.source}/build.gradle" todir="${build.dir.forge}" />
     </target>
 
     <target name="replace_tokens">
-        <replace dir="${build.dir.development}/forge/src/main" token="@VERSION@" value="${mod.version}.${build_number.build_number}" />
-        <replace dir="${build.dir.development}/forge/src/main" token="@BUILD_NUMBER@" value="${build_number.build_number}" />
+        <replace dir="${build.dir.forge}/src/main" token="@VERSION@" value="${mod.version}.${build_number.build_number}" />
+    	<replace dir="${build.dir.forge}/src/main" token="@RAW_VERSION@" value="${mod.version}" />
+        <replace dir="${build.dir.forge}/src/main" token="@BUILD_NUMBER@" value="${build_number.build_number}" />
     </target>
 
     <target name="build">
+    	<!-- Check Jenkins property -->
+        <condition property="build.notjenkins">
+            <isfalse value="${build.jenkins}" />
+        </condition>
+
         <!-- Prep for the build -->
         <antcall target="clean" />
         <antcall target="prep" />
-        <condition property="build.notjenkins">
-        	<isfalse value="${build.jenkins}" />
-        </condition>
     	<antcall target="increment_build_number" />
     	<antcall target="replace_tokens" />
-    	<replace file="${build.dir.development}/forge/build.gradle" token="@VERSION@" value="${mod.minecraft.version}-${mod.version}.${build_number.build_number}" />
+    	<replace file="${build.dir.forge}/build.gradle" token="@VERSION@" value="${mod.minecraft.version}-${mod.version}.${build_number.build_number}" />
 
         <!-- Build the mod -->
-    	<exec dir="${build.dir.development}/forge" executable="cmd" osfamily="windows">
+    	<exec dir="${build.dir.forge}" executable="cmd" osfamily="windows">
             <arg line="/c gradlew.bat build --stacktrace" />
         </exec>
-        <exec dir="${build.dir.development}/forge" executable="bash" osfamily="unix">
+        <exec dir="${build.dir.forge}" executable="bash" osfamily="unix">
             <arg line="gradlew build --stacktrace" />
         </exec>
     	
     	<!-- Copy built jar -->
     	<copy todir="${build.dir.build}">
-            <fileset file="${build.dir.development}/forge/build/libs/${mod.name}-${mod.minecraft.version}-${mod.version}.${build_number.build_number}.jar" />
+            <fileset file="${build.dir.forge}/build/libs/${mod.name}-${mod.minecraft.version}-${mod.version}.${build_number.build_number}.jar" />
         </copy>
 
         <!-- Clean up ForgeGradle now that we are done -->

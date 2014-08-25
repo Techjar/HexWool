@@ -1,4 +1,5 @@
-dir.development=../../
+dir.forge=../../forge/
+dir.source=./
 dir.build=../../build/HexWool/
 dir.modproject=HexWool
 keystore.location=../../../keystore.jks
