@@ -167,13 +167,12 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 	}
 
 	public int[] getRequiredDyes(int color) {
+		int[] arr = new int[4];
 		if (color == -1) {
-			int[] arr = new int[4];
 			for (int i = 0; i < 4; i++)
 				arr[i] = (int)(random.nextFloat() * HexWool.dyePerWool);
 			return arr;
 		}
-		int[] arr = new int[4];
 		CMYKColor cmyk = Util.colorToCmyk(color);
 		arr[0] = (int)(cmyk.getCyan() * HexWool.dyePerWool);
 		arr[1] = (int)(cmyk.getMagenta() * HexWool.dyePerWool);
@@ -183,8 +182,6 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 	}
 
 	public boolean hasRequiredDyes(int color) {
-		if (color == -1)
-			return true;
 		int[] dyes = getRequiredDyes(color);
 		if (cyanDye < dyes[0] || magentaDye < dyes[1] || yellowDye < dyes[2] || blackDye < dyes[3]) {
 			return false;
