@@ -86,7 +86,7 @@ public class Util {
 		}
 		if (itemMatchesOre(itemStack, "cloth")) {
 			if (Block.getBlockFromItem(itemStack.getItem()) != HexWoolBlocks.coloredWool) {
-				itemStack = new ItemStack(HexWoolBlocks.coloredWool);
+				itemStack = new ItemStack(HexWoolBlocks.coloredWool, itemStack.stackSize);
 			}
 			if (!itemStack.hasTagCompound())
 				itemStack.setTagCompound(new NBTTagCompound());

@@ -62,7 +62,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 							if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
 								int amountMade;
 								if (itemStack.stackSize + inv[1].stackSize > maxStack) {
-									amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - maxStack);
+									amountMade = maxStack - inv[1].stackSize;
 								} else {
 									amountMade = itemStack.stackSize;
 								}
@@ -76,6 +76,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 							}
 						}
 					}
+					return false;
 				}
 				int amountMade = 0;
 				if (inv[1] != null) {
@@ -83,9 +84,9 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 					if (inv[1].stackSize < maxStack) {
 						itemStack = Util.colorizeItem(itemStack, color);
 
-						if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
+						if (Util.getItemHasColor(inv[1]) && Util.getItemColor(inv[1]) == color) {
 							if (itemStack.stackSize + inv[1].stackSize > maxStack) {
-								amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - maxStack);
+								amountMade = maxStack - inv[1].stackSize;
 							} else {
 								amountMade = itemStack.stackSize;
 							}
@@ -101,14 +102,10 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 					int magenta = dyes[1];
 					int yellow = dyes[2];
 					int black = dyes[3];
-					outer: for (int i = 0; i < amountMade; i++) {
-						for (int j = 0; j < 2; j++) {
-							if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
-								if (j == 1)
-									break outer;
-								if (checkDyes())
-									break;
-							}
+					for (int i = 0; i < amountMade; i++) {
+						checkDyes();
+						if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
+							break;
 						}
 
 						cyanDye -= cyan;
@@ -147,7 +144,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 						if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
 							int amountMade;
 							if (itemStack.stackSize + inv[1].stackSize > maxStack) {
-								amountMade = itemStack.stackSize - ((itemStack.stackSize + inv[1].stackSize) - maxStack);
+								amountMade = maxStack - inv[1].stackSize;
 							} else {
 								amountMade = itemStack.stackSize;
 							}
@@ -334,8 +331,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 			}
 		}
 		if (colorizing) {
-			this.ticks++;
-			if (this.ticks >= HexWool.colorizingTicks) {
+			if (this.ticks++ >= HexWool.colorizingTicks) {
 				this.ticks = 0;
 				this.colorizing = false;
 				if (inv[1] == null)
@@ -349,36 +345,35 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 	}
 
 	public boolean checkDyes() {
-		boolean didChange = false;
 		if (cyanDye <= 1000 - HexWool.dyePerItem && inv[2] != null && Util.itemMatchesOre(inv[2], "dyeCyan")) {
 			cyanDye += HexWool.dyePerItem;
 			inv[2].stackSize--;
 			if (inv[2].stackSize < 1)
 				inv[2] = null;
-			didChange = dyesChanged = true;
+			dyesChanged = true;
 		}
 		if (magentaDye <= 1000 - HexWool.dyePerItem && inv[3] != null && Util.itemMatchesOre(inv[3], "dyeMagenta")) {
 			magentaDye += HexWool.dyePerItem;
 			inv[3].stackSize--;
 			if (inv[3].stackSize < 1)
 				inv[3] = null;
-			didChange = dyesChanged = true;
+			dyesChanged = true;
 		}
 		if (yellowDye <= 1000 - HexWool.dyePerItem && inv[4] != null && Util.itemMatchesOre(inv[4], "dyeYellow")) {
 			yellowDye += HexWool.dyePerItem;
 			inv[4].stackSize--;
 			if (inv[4].stackSize < 1)
 				inv[4] = null;
-			didChange = dyesChanged = true;
+			dyesChanged = true;
 		}
 		if (blackDye <= 1000 - HexWool.dyePerItem && inv[5] != null && Util.itemMatchesOre(inv[5], "dyeBlack")) {
 			blackDye += HexWool.dyePerItem;
 			inv[5].stackSize--;
 			if (inv[5].stackSize < 1)
 				inv[5] = null;
-			didChange = dyesChanged = true;
+			dyesChanged = true;
 		}
-		return didChange;
+		return dyesChanged;
 	}
 
 	@Override
