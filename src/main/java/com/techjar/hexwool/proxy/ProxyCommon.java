@@ -49,8 +49,8 @@ public class ProxyCommon {
 	}
 	
 	public void fireInterModComms() {
-		FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", "com.techjar.hexwool.tileentity.TileEntityColoredWool");
-		FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", "com.techjar.hexwool.tileentity.TileEntityWoolColorizer");
+		FMLInterModComms.sendMessage("appliedenergistics2", "whitelist-spatial", "com.techjar.hexwool.tileentity.TileEntityColoredWool");
+		FMLInterModComms.sendMessage("appliedenergistics2", "whitelist-spatial", "com.techjar.hexwool.tileentity.TileEntityWoolColorizer");
 		FMLInterModComms.sendMessage("Waila", "register", "com.techjar.hexwool.integration.WailaDataProvider.callbackRegister");
 	}
 
