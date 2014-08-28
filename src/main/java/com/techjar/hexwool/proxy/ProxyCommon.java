@@ -25,8 +25,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ProxyCommon {
 	public void registerBlocks() {
-		GameRegistry.registerBlock(HexWoolBlocks.woolColorizer = new BlockWoolColorizer(), "hexwool:wool_colorizer");
-		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredWool(), ItemBlockColoredWool.class, "hexwool:colored_wool");
+		GameRegistry.registerBlock(HexWoolBlocks.woolColorizer = new BlockWoolColorizer(), "wool_colorizer");
+		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredWool(), ItemBlockColoredWool.class, "colored_wool");
 		Blocks.fire.setFireInfo(HexWoolBlocks.coloredWool, 30, 60);
 	}
 
