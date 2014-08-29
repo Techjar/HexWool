@@ -13,6 +13,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import com.techjar.hexwool.Config;
 import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.util.Util;
 import com.techjar.hexwool.util.Util.CMYKColor;
@@ -46,7 +47,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 
 	public boolean colorizeWool(int color) {
 		ItemStack itemStack = inv[0];
-		if (!HexWool.creative) {
+		if (!Config.creative) {
 			if (itemStack != null && hasRequiredDyes(color) && Util.canColorizeItem(itemStack, color)) {
 				if (Util.getItemHasColor(itemStack) && Util.getItemColor(itemStack) == color) {
 					if (inv[1] == null) {
@@ -167,14 +168,14 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 		int[] arr = new int[4];
 		if (color == -1) {
 			for (int i = 0; i < 4; i++)
-				arr[i] = (int)(random.nextFloat() * HexWool.dyePerWool);
+				arr[i] = (int)(random.nextFloat() * Config.dyePerWool);
 			return arr;
 		}
 		CMYKColor cmyk = Util.colorToCmyk(color);
-		arr[0] = (int)(cmyk.getCyan() * HexWool.dyePerWool);
-		arr[1] = (int)(cmyk.getMagenta() * HexWool.dyePerWool);
-		arr[2] = (int)(cmyk.getYellow() * HexWool.dyePerWool);
-		arr[3] = (int)(cmyk.getBlack() * HexWool.dyePerWool);
+		arr[0] = (int)(cmyk.getCyan() * Config.dyePerWool);
+		arr[1] = (int)(cmyk.getMagenta() * Config.dyePerWool);
+		arr[2] = (int)(cmyk.getYellow() * Config.dyePerWool);
+		arr[3] = (int)(cmyk.getBlack() * Config.dyePerWool);
 		return arr;
 	}
 
@@ -188,7 +189,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 
 	@SideOnly(Side.CLIENT)
 	public int getProgressScaled(int scale) {
-		return this.ticks * scale / HexWool.colorizingTicks;
+		return this.ticks * scale / Config.colorizingTicks;
 	}
 
 	@Override
@@ -331,7 +332,7 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 			}
 		}
 		if (colorizing) {
-			if (this.ticks++ >= HexWool.colorizingTicks) {
+			if (this.ticks++ >= Config.colorizingTicks) {
 				this.ticks = 0;
 				this.colorizing = false;
 				if (inv[1] == null)
@@ -345,29 +346,29 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 	}
 
 	public boolean checkDyes() {
-		if (cyanDye <= 1000 - HexWool.dyePerItem && inv[2] != null && Util.itemMatchesOre(inv[2], "dyeCyan")) {
-			cyanDye += HexWool.dyePerItem;
+		if (cyanDye <= 1000 - Config.dyePerItem && inv[2] != null && Util.itemMatchesOre(inv[2], "dyeCyan")) {
+			cyanDye += Config.dyePerItem;
 			inv[2].stackSize--;
 			if (inv[2].stackSize < 1)
 				inv[2] = null;
 			dyesChanged = true;
 		}
-		if (magentaDye <= 1000 - HexWool.dyePerItem && inv[3] != null && Util.itemMatchesOre(inv[3], "dyeMagenta")) {
-			magentaDye += HexWool.dyePerItem;
+		if (magentaDye <= 1000 - Config.dyePerItem && inv[3] != null && Util.itemMatchesOre(inv[3], "dyeMagenta")) {
+			magentaDye += Config.dyePerItem;
 			inv[3].stackSize--;
 			if (inv[3].stackSize < 1)
 				inv[3] = null;
 			dyesChanged = true;
 		}
-		if (yellowDye <= 1000 - HexWool.dyePerItem && inv[4] != null && Util.itemMatchesOre(inv[4], "dyeYellow")) {
-			yellowDye += HexWool.dyePerItem;
+		if (yellowDye <= 1000 - Config.dyePerItem && inv[4] != null && Util.itemMatchesOre(inv[4], "dyeYellow")) {
+			yellowDye += Config.dyePerItem;
 			inv[4].stackSize--;
 			if (inv[4].stackSize < 1)
 				inv[4] = null;
 			dyesChanged = true;
 		}
-		if (blackDye <= 1000 - HexWool.dyePerItem && inv[5] != null && Util.itemMatchesOre(inv[5], "dyeBlack")) {
-			blackDye += HexWool.dyePerItem;
+		if (blackDye <= 1000 - Config.dyePerItem && inv[5] != null && Util.itemMatchesOre(inv[5], "dyeBlack")) {
+			blackDye += Config.dyePerItem;
 			inv[5].stackSize--;
 			if (inv[5].stackSize < 1)
 				inv[5] = null;

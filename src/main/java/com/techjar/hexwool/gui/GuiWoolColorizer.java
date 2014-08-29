@@ -11,6 +11,7 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.techjar.hexwool.Config;
 import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.container.ContainerWoolColorizer;
 import com.techjar.hexwool.container.SlotColorizer;
@@ -109,7 +110,7 @@ public class GuiWoolColorizer extends GuiContainer /* implements ICrafting */{
 			this.colorizeBtn.enabled = false;
 			return;
 		}
-		if (HexWool.creative) {
+		if (Config.creative) {
 			this.colorizeBtn.enabled = true;
 			return;
 		}
