@@ -1,5 +1,6 @@
 package com.techjar.hexwool.tileentity;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -13,6 +14,11 @@ public class TileEntityColoredWool extends TileEntity {
 	public boolean canUpdate() {
 		return false;
 	}
+	
+	@Override
+	public boolean shouldRenderInPass(int pass) {
+		return false;
+	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound tagCompound) {
@@ -24,17 +30,18 @@ public class TileEntityColoredWool extends TileEntity {
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		color = tagCompound.getInteger("color");
+		
 	}
 
 	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
-		this.writeToNBT(tagCompound);
+		tagCompound.setInteger("c", color);
 		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, tagCompound);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager network, S35PacketUpdateTileEntity packet) {
-		this.readFromNBT(packet.func_148857_g());
+		this.color = packet.func_148857_g().getInteger("c");
 	}
 }
