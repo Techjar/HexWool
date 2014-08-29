@@ -92,7 +92,7 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(12.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(12.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(9.0D));
-		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));*
+		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));
 
 		return true;
 	}
