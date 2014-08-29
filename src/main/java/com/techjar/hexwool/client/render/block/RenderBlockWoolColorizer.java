@@ -24,7 +24,6 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 		IIcon icon = ((BlockWoolColorizer)block).dishIcon;
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		GL11.glPushMatrix();
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
@@ -61,7 +60,6 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 		tessellator.addVertexWithUV(0.25D, 1.0D, 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(9.0D));
 		tessellator.addVertexWithUV(0.75D, 1.0D, 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));
 		tessellator.draw();
-		GL11.glPopMatrix();
 	}
 
 	@Override
@@ -94,13 +92,13 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(12.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(12.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(9.0D));
-		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));
+		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));*
 
 		return true;
 	}
 
 	@Override
-	public boolean shouldRender3DInInventory(int what) {
+	public boolean shouldRender3DInInventory(int modelId) {
 		return true;
 	}
 
