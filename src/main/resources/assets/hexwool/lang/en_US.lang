@@ -4,4 +4,4 @@ hexwool.string.colorText=Color
 
 // Blocks
 tile.hexwool.block.woolColorizer.name=Wool Colorizer
-tile.hexwool.block.coloredWool.name=Colored Wool
+tile.hexwool.block.coloredBlock.name=Colored

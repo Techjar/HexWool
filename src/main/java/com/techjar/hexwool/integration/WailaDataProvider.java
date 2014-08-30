@@ -9,7 +9,7 @@ import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
-import com.techjar.hexwool.block.BlockColoredWool;
+import com.techjar.hexwool.block.BlockColoredBlock;
 import com.techjar.hexwool.tileentity.TileEntityColoredWool;
 import com.techjar.hexwool.util.Util;
 
@@ -40,6 +40,6 @@ public class WailaDataProvider implements IWailaDataProvider {
 
 	public static void callbackRegister(IWailaRegistrar registrar) {
 		registrar.addConfig("HexWool", "hexwool.showwoolcolor", "Show Wool Color");
-		registrar.registerBodyProvider(new WailaDataProvider(), BlockColoredWool.class);
+		registrar.registerBodyProvider(new WailaDataProvider(), BlockColoredBlock.class);
 	}
 }

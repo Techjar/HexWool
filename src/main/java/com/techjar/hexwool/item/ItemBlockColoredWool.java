@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 
 import com.techjar.hexwool.util.Util;
@@ -25,5 +26,29 @@ public class ItemBlockColoredWool extends ItemBlock {
 			int color = itemStack.getTagCompound().getInteger("color");
 			list.add(StatCollector.translateToLocal("hexwool.string.colorText") + ": #" + (color == -1 ? "EASTER" : Util.colorToHex(color)));
 		}
+	}
+	
+	@Override
+	public String getItemStackDisplayName(ItemStack itemStack) {
+		String name = super.getItemStackDisplayName(itemStack) + " ";
+		if (itemStack.hasTagCompound()) {
+			NBTTagCompound nbt = itemStack.getTagCompound();
+			if (nbt.hasKey("display", 10)) {
+				NBTTagCompound tagCompound = nbt.getCompoundTag("display");
+				if (tagCompound.hasKey("Name", 8)) {
+					name = tagCompound.getString("Name");
+				}
+			} else if (nbt.hasKey("block", 8)) {
+				Block block = Block.getBlockFromName(nbt.getString("block"));
+				if (block != null) {
+					try {
+						name += new ItemStack(block, 1, nbt.getInteger("meta")).getDisplayName();
+					} catch (NullPointerException ex) {
+						name += "NullPointerException";
+					}
+				}
+			}
+		}
+		return name;
 	}
 }

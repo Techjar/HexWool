@@ -8,9 +8,9 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.techjar.hexwool.block.HexWoolBlocks;
-import com.techjar.hexwool.client.render.block.RenderBlockWoolColorizer;
-import com.techjar.hexwool.client.render.item.RenderItemBlockColoredWool;
-import com.techjar.hexwool.client.render.tileentity.RenderTileEntityWoolColorizer;
+import com.techjar.hexwool.client.render.block.*;
+import com.techjar.hexwool.client.render.item.*;
+import com.techjar.hexwool.client.render.tileentity.*;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
 import cpw.mods.fml.client.FMLClientHandler;
@@ -19,6 +19,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ProxyClient extends ProxyCommon {
 	private int renderIdWoolColorizer;
+	private int renderIdColoredWool;
 
 	@Override
 	public void registerRenderers() {
@@ -31,6 +32,8 @@ public class ProxyClient extends ProxyCommon {
 	public int getBlockRender(Block block) {
 		if (block == HexWoolBlocks.woolColorizer)
 			return renderIdWoolColorizer;
+		if (block == HexWoolBlocks.coloredWool)
+			return renderIdColoredWool;
 		return -1;
 	}
 
@@ -43,8 +46,8 @@ public class ProxyClient extends ProxyCommon {
 	}
 
 	private void registerBlockRenderers() {
-		renderIdWoolColorizer = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(new RenderBlockWoolColorizer(renderIdWoolColorizer));
+		RenderingRegistry.registerBlockHandler(new RenderBlockWoolColorizer(renderIdWoolColorizer = RenderingRegistry.getNextAvailableRenderId()));
+		RenderingRegistry.registerBlockHandler(new RenderBlockColoredWool(renderIdColoredWool = RenderingRegistry.getNextAvailableRenderId()));
 	}
 
 	private void registerItemRenderers() {
