@@ -163,6 +163,12 @@ public class Util {
 			this.g = green;
 			this.b = blue;
 		}
+		
+		public RGBColor(float red, float green, float blue) {
+			this.r = (int)(red * 255);
+			this.g = (int)(green * 255);
+			this.b = (int)(blue * 255);
+		}
 
 		public int getRed() {
 			return r;

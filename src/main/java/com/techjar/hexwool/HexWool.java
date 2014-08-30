@@ -19,6 +19,7 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameData;
 
 @Mod(modid = "HexWool", name = "HexWool", version = "@VERSION@", dependencies = "required-after:Forge@[10.13.0.1206,)", acceptableRemoteVersions = "@RAW_VERSION@.*")
 public class HexWool {
@@ -55,6 +56,9 @@ public class HexWool {
 		// Ore Dictionary and Recipes
 		proxy.registerOres();
 		proxy.registerRecipes();
+		
+		// Register our colorizable blocks
+		Config.colorizableBlocks.put(new Config.ColorizableBlock(Blocks.wool, -1), new Config.ColorizableBlock(Blocks.wool, 0));
 
 		// Renders (client only, duh!)
 		proxy.registerRenderers();

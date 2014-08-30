@@ -13,7 +13,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import com.techjar.hexwool.block.BlockColoredWool;
+import com.techjar.hexwool.block.BlockColoredBlock;
 import com.techjar.hexwool.block.BlockWoolColorizer;
 import com.techjar.hexwool.block.HexWoolBlocks;
 import com.techjar.hexwool.item.ItemBlockColoredWool;
@@ -26,8 +26,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class ProxyCommon {
 	public void registerBlocks() {
 		GameRegistry.registerBlock(HexWoolBlocks.woolColorizer = new BlockWoolColorizer(), "wool_colorizer");
-		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredWool(), ItemBlockColoredWool.class, "colored_wool");
-		Blocks.fire.setFireInfo(HexWoolBlocks.coloredWool, 30, 60);
+		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredBlock(), ItemBlockColoredWool.class, "colored_wool");
 	}
 
 	public void registerTileEntities() {

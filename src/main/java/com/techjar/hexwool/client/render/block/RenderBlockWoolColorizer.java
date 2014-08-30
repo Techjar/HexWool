@@ -24,7 +24,8 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 		IIcon icon = ((BlockWoolColorizer)block).dishIcon;
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(0.0F, -1.0F, 0.0F);
@@ -60,6 +61,8 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 		tessellator.addVertexWithUV(0.25D, 1.0D, 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(9.0D));
 		tessellator.addVertexWithUV(0.75D, 1.0D, 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));
 		tessellator.draw();
+		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+        GL11.glRotatef(90.0F, 0.0F, -1.0F, 0.0F);
 	}
 
 	@Override

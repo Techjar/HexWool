@@ -40,8 +40,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    compile files("dependencies/ComputerCraft1.64pr4.jar")
-    compile files("dependencies/Waila-1.5.3_1.7.10.jar")
+    compile files("dependencies/ComputerCraft.jar")
+    compile files("dependencies/Waila.jar")
 }
 
 processResources
