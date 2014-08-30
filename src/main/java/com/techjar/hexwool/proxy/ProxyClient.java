@@ -32,7 +32,7 @@ public class ProxyClient extends ProxyCommon {
 	public int getBlockRender(Block block) {
 		if (block == HexWoolBlocks.woolColorizer)
 			return renderIdWoolColorizer;
-		if (block == HexWoolBlocks.coloredWool)
+		if (block == HexWoolBlocks.coloredBlock)
 			return renderIdColoredWool;
 		return -1;
 	}
@@ -51,7 +51,7 @@ public class ProxyClient extends ProxyCommon {
 	}
 
 	private void registerItemRenderers() {
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(HexWoolBlocks.coloredWool), new RenderItemBlockColoredWool());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(HexWoolBlocks.coloredBlock), new RenderItemBlockColoredWool());
 	}
 
 	private void registerTileEntityRenderers() {

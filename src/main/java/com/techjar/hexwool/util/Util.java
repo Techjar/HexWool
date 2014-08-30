@@ -46,7 +46,7 @@ public class Util {
 		if (itemStack.getItem() == Items.leather_boots || itemStack.getItem() == Items.leather_chestplate || itemStack.getItem() == Items.leather_helmet || itemStack.getItem() == Items.leather_leggings) {
 			if (itemStack.hasTagCompound())
 				return itemStack.getTagCompound().getCompoundTag("display").hasKey("color");
-		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.coloredWool) {
+		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.coloredBlock) {
 			if (itemStack.hasTagCompound())
 				return itemStack.getTagCompound().hasKey("color");
 		} else {
@@ -63,7 +63,7 @@ public class Util {
 		if (itemStack.getItem() == Items.leather_boots || itemStack.getItem() == Items.leather_chestplate || itemStack.getItem() == Items.leather_helmet || itemStack.getItem() == Items.leather_leggings) {
 			if (itemStack.hasTagCompound())
 				return itemStack.getTagCompound().getCompoundTag("display").getInteger("color");
-		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.coloredWool) {
+		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.coloredBlock) {
 			if (itemStack.hasTagCompound())
 				return itemStack.getTagCompound().getInteger("color");
 		} else {
@@ -85,8 +85,8 @@ public class Util {
 			itemStack.getTagCompound().getCompoundTag("display").setInteger("color", color);
 		}
 		if (itemMatchesOre(itemStack, "cloth")) {
-			if (Block.getBlockFromItem(itemStack.getItem()) != HexWoolBlocks.coloredWool) {
-				itemStack = new ItemStack(HexWoolBlocks.coloredWool, itemStack.stackSize);
+			if (Block.getBlockFromItem(itemStack.getItem()) != HexWoolBlocks.coloredBlock) {
+				itemStack = new ItemStack(HexWoolBlocks.coloredBlock, itemStack.stackSize);
 			}
 			if (!itemStack.hasTagCompound())
 				itemStack.setTagCompound(new NBTTagCompound());

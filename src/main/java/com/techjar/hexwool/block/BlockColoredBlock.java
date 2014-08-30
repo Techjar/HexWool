@@ -22,7 +22,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.techjar.hexwool.HexWool;
-import com.techjar.hexwool.tileentity.TileEntityColoredWool;
+import com.techjar.hexwool.tileentity.TileEntityColoredBlock;
 import com.techjar.hexwool.util.Util;
 
 import cpw.mods.fml.common.registry.GameData;
@@ -33,20 +33,20 @@ public class BlockColoredBlock extends Block {
 	private Random random = new Random();
 
 	public BlockColoredBlock() {
-		super(Material.cloth);
+		super(Material.iron);
 		this.setHardness(0.8F);
-		this.setStepSound(soundTypeCloth);
+		this.setStepSound(HexWool.soundType);
 		// this.setCreativeTab(CreativeTabs.tabBlock);
 		this.setBlockName("hexwool.block.coloredBlock");
-		//this.setBlockTextureName("wool_colored");
+		this.setBlockTextureName("wool_colored");
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int colorMultiplier(IBlockAccess blockAccess, int x, int y, int z) {
 		TileEntity tile = blockAccess.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			int color = ((TileEntityColoredWool)tile).color;
+		if (tile instanceof TileEntityColoredBlock) {
+			int color = ((TileEntityColoredBlock)tile).color;
 			if (color == -1)
 				return Util.rgbToColor(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 			return color;
@@ -59,6 +59,19 @@ public class BlockColoredBlock extends Block {
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		this.blockIcon = iconRegister.registerIcon("IGNORE_THIS_NOT_AN_ERROR");
 	}*/
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
+			if (block != null) {
+				return block.getIcon(world, x, y, z, side);
+			}
+		}
+		return super.getIcon(world, x, y, z, side);
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -71,8 +84,8 @@ public class BlockColoredBlock extends Block {
 		ItemStack itemStack = super.getPickBlock(target, world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
 
-		if (tile instanceof TileEntityColoredWool) {
-			TileEntityColoredWool tileEntity = (TileEntityColoredWool)tile;
+		if (tile instanceof TileEntityColoredBlock) {
+			TileEntityColoredBlock tileEntity = (TileEntityColoredBlock)tile;
 			itemStack.setTagCompound(new NBTTagCompound());
 			itemStack.getTagCompound().setInteger("color", tileEntity.color);
 			itemStack.getTagCompound().setString("block", GameData.getBlockRegistry().getNameForObject(tileEntity.block));
@@ -93,8 +106,8 @@ public class BlockColoredBlock extends Block {
 		ItemStack itemStack = new ItemStack(this, 1, world.getBlockMetadata(x, y, z));
 		TileEntity tile = world.getTileEntity(x, y, z);
 
-		if (tile instanceof TileEntityColoredWool) {
-			TileEntityColoredWool tileEntity = (TileEntityColoredWool)tile;
+		if (tile instanceof TileEntityColoredBlock) {
+			TileEntityColoredBlock tileEntity = (TileEntityColoredBlock)tile;
 			itemStack.setTagCompound(new NBTTagCompound());
 			itemStack.getTagCompound().setInteger("color", tileEntity.color);
 			itemStack.getTagCompound().setString("block", GameData.getBlockRegistry().getNameForObject(tileEntity.block));
@@ -111,15 +124,15 @@ public class BlockColoredBlock extends Block {
 
 	@Override
 	public TileEntity createTileEntity(World world, int meta) {
-		return new TileEntityColoredWool();
+		return new TileEntityColoredBlock();
 	}
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
 		if (itemStack.hasTagCompound()) {
 			TileEntity tile = world.getTileEntity(x, y, z);
-			if (tile instanceof TileEntityColoredWool) {
-				TileEntityColoredWool tileEntity = (TileEntityColoredWool)tile;
+			if (tile instanceof TileEntityColoredBlock) {
+				TileEntityColoredBlock tileEntity = (TileEntityColoredBlock)tile;
 				NBTTagCompound nbt = itemStack.getTagCompound();
 				tileEntity.color = nbt.getInteger("color");
 				if (nbt.hasKey("block")) {
@@ -134,10 +147,64 @@ public class BlockColoredBlock extends Block {
 	}
 	
 	@Override
+	public boolean isNormalCube(IBlockAccess world, int x, int y, int z) {
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
+			if (block != null) {
+				return block.isNormalCube(world, x, y, z);
+			}
+		}
+		return super.isNormalCube(world, x, y, z);
+	}
+	
+	// This is really dumb. Should pass IBlockAccess and coords.
+	/*@Override
+	public boolean canProvidePower() {
+		return true;
+	}*/
+	
+	@Override
+	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
+			if (block != null) {
+				return block.canConnectRedstone(world, x, y, z, side);
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) {
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
+			if (block != null) {
+				return block.isProvidingWeakPower(world, x, y, z, side);
+			}
+		}
+		return 0;
+	}
+	
+	@Override
+	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) {
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
+			if (block != null) {
+				return block.isProvidingStrongPower(world, x, y, z, side);
+			}
+		}
+		return 0;
+	}
+	
+	@Override
 	public float getBlockHardness(World world, int x, int y, int z) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.getBlockHardness(world, x, y, z);
 			}
@@ -148,8 +215,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return Blocks.fire.getFlammability(block);
 			}
@@ -160,8 +227,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public int getFireSpreadSpeed(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return Blocks.fire.getEncouragement(block);
 			}
@@ -172,8 +239,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public boolean isFireSource(World world, int x, int y, int z, ForgeDirection side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.isFireSource(world, x, y, z, side);
 			}
@@ -184,8 +251,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public float getExplosionResistance(Entity entity, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.getExplosionResistance(entity);
 			}
@@ -196,8 +263,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public boolean isWood(IBlockAccess world, int x, int y, int z) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.isWood(world, x, y, z);
 			}
@@ -208,8 +275,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public boolean canEntityDestroy(IBlockAccess world, int x, int y, int z, Entity entity) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.canEntityDestroy(world, x, y, z, entity);
 			}
@@ -220,8 +287,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				block.onEntityCollidedWithBlock(world, x, y, z, entity);
 			}
@@ -231,8 +298,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public boolean canSustainPlant(IBlockAccess world, int x, int y, int z, ForgeDirection direction, IPlantable plantable) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.canSustainPlant(world, x, y, z, direction, plantable);
 			}
@@ -243,8 +310,8 @@ public class BlockColoredBlock extends Block {
 	@Override
 	public boolean isBlockSolid(IBlockAccess world, int x, int y, int z, int side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.isBlockSolid(world, x, y, z, side);
 			}
@@ -256,8 +323,8 @@ public class BlockColoredBlock extends Block {
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			Block block = ((TileEntityColoredWool)tile).block;
+		if (tile instanceof TileEntityColoredBlock) {
+			Block block = ((TileEntityColoredBlock)tile).block;
 			if (block != null) {
 				return block.shouldSideBeRendered(world, x, y, z, side);
 			}

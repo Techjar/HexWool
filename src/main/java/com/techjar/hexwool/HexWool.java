@@ -4,6 +4,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.block.Block.SoundType;
 
 import com.techjar.hexwool.block.HexWoolBlocks;
 import com.techjar.hexwool.gui.GuiHandler;
@@ -23,6 +24,8 @@ import cpw.mods.fml.common.registry.GameData;
 
 @Mod(modid = "HexWool", name = "HexWool", version = "@VERSION@", dependencies = "required-after:Forge@[10.13.0.1206,)", acceptableRemoteVersions = "@RAW_VERSION@.*")
 public class HexWool {
+	public static final SoundType soundType = new SoundType("HexWool", 1.0F, 1.0F);
+	
 	@Instance("HexWool")
 	public static HexWool instance;
 

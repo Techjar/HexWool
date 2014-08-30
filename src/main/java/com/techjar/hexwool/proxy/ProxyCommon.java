@@ -17,7 +17,7 @@ import com.techjar.hexwool.block.BlockColoredBlock;
 import com.techjar.hexwool.block.BlockWoolColorizer;
 import com.techjar.hexwool.block.HexWoolBlocks;
 import com.techjar.hexwool.item.ItemBlockColoredWool;
-import com.techjar.hexwool.tileentity.TileEntityColoredWool;
+import com.techjar.hexwool.tileentity.TileEntityColoredBlock;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -26,17 +26,17 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class ProxyCommon {
 	public void registerBlocks() {
 		GameRegistry.registerBlock(HexWoolBlocks.woolColorizer = new BlockWoolColorizer(), "wool_colorizer");
-		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredBlock(), ItemBlockColoredWool.class, "colored_wool");
+		GameRegistry.registerBlock(HexWoolBlocks.coloredBlock = new BlockColoredBlock(), ItemBlockColoredWool.class, "colored_wool");
 	}
 
 	public void registerTileEntities() {
-		GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");
+		GameRegistry.registerTileEntity(TileEntityColoredBlock.class, "HW_ColoredWool");
 		GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, "HW_WoolColorizer");
 	}
 	
 	public void registerOres() {
 		OreDictionary.registerOre("cloth", new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE));
-		OreDictionary.registerOre("cloth", new ItemStack(HexWoolBlocks.coloredWool, 1, OreDictionary.WILDCARD_VALUE));
+		OreDictionary.registerOre("cloth", new ItemStack(HexWoolBlocks.coloredBlock, 1, OreDictionary.WILDCARD_VALUE));
 	}
 
 	public void registerRecipes() {

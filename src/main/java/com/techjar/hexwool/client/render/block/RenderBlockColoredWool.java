@@ -2,7 +2,7 @@ package com.techjar.hexwool.client.render.block;
 
 import org.lwjgl.opengl.GL11;
 
-import com.techjar.hexwool.tileentity.TileEntityColoredWool;
+import com.techjar.hexwool.tileentity.TileEntityColoredBlock;
 import com.techjar.hexwool.util.Util;
 import com.techjar.hexwool.util.Util.RGBColor;
 
@@ -80,8 +80,8 @@ public class RenderBlockColoredWool implements ISimpleBlockRenderingHandler {
 		Block tileBlock = Blocks.air;
 		int metadata = 0;
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityColoredWool) {
-			TileEntityColoredWool tileEntity = (TileEntityColoredWool)tile;
+		if (tile instanceof TileEntityColoredBlock) {
+			TileEntityColoredBlock tileEntity = (TileEntityColoredBlock)tile;
 			tileBlock = tileEntity.block == null ? Blocks.air : tileEntity.block;
 			metadata = tileEntity.meta;
 		}

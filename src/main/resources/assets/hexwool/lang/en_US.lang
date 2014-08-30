@@ -1,6 +1,7 @@
 // Various Strings
 hexwool.string.colorizeButton=Colorize
 hexwool.string.colorText=Color
+hexwool.string.nullText=Null
 
 // Blocks
 tile.hexwool.block.woolColorizer.name=Wool Colorizer

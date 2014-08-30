@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import com.techjar.hexwool.block.BlockColoredBlock;
-import com.techjar.hexwool.tileentity.TileEntityColoredWool;
+import com.techjar.hexwool.tileentity.TileEntityColoredBlock;
 import com.techjar.hexwool.util.Util;
 
 public class WailaDataProvider implements IWailaDataProvider {
@@ -26,8 +26,8 @@ public class WailaDataProvider implements IWailaDataProvider {
 
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-		if (accessor.getTileEntity() instanceof TileEntityColoredWool) {
-			int color = ((TileEntityColoredWool)accessor.getTileEntity()).color;
+		if (accessor.getTileEntity() instanceof TileEntityColoredBlock) {
+			int color = ((TileEntityColoredBlock)accessor.getTileEntity()).color;
 			currenttip.add(StatCollector.translateToLocal("hexwool.string.colorText") + ": #" + (color == -1 ? "EASTER" : Util.colorToHex(color)));
 		}
 		return currenttip;
