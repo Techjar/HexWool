@@ -30,7 +30,7 @@ public class ItemBlockColoredWool extends ItemBlock {
 	
 	@Override
 	public String getItemStackDisplayName(ItemStack itemStack) {
-		String name = super.getItemStackDisplayName(itemStack) + " ";
+		String name = null;
 		if (itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
 			if (nbt.hasKey("display", 10)) {
@@ -42,13 +42,11 @@ public class ItemBlockColoredWool extends ItemBlock {
 				Block block = Block.getBlockFromName(nbt.getString("block"));
 				if (block != null) {
 					try {
-						name += new ItemStack(block, 1, nbt.getInteger("meta")).getDisplayName();
-					} catch (NullPointerException ex) {
-						name += "NullPointerException";
-					}
+						name = new ItemStack(block, 1, nbt.getInteger("meta")).getDisplayName();
+					} catch (NullPointerException ex) {}
 				}
 			}
 		}
-		return name;
+		return super.getItemStackDisplayName(itemStack) + " " + (name != null ? name : StatCollector.translateToLocal("hexwool.string.nullText"));
 	}
 }

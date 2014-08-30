@@ -1,5 +1,7 @@
 package com.techjar.hexwool.tileentity;
 
+import com.techjar.hexwool.block.HexWoolBlocks;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -8,7 +10,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-public class TileEntityColoredWool extends TileEntity {
+public class TileEntityColoredBlock extends TileEntity {
 	public int color = 0xFFFFFF;
 	public Block block;
 	public byte meta;
@@ -37,6 +39,7 @@ public class TileEntityColoredWool extends TileEntity {
 		color = tagCompound.hasKey("color") ? tagCompound.getInteger("color") : tagCompound.getInteger("c");
 		if (tagCompound.hasKey("b")) {
 			block = Block.getBlockById(tagCompound.getShort("b"));
+			if (block == HexWoolBlocks.coloredBlock) block = Blocks.air; // Abort! Abort! StackOverflowError imminent!
 			meta = tagCompound.getByte("m");
 		} else {
 			block = Blocks.wool;
