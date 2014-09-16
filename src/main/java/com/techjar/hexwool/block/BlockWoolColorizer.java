@@ -40,6 +40,11 @@ public class BlockWoolColorizer extends Block {
 		this.setBlockName("hexwool.block.woolColorizer");
 		this.setBlockTextureName("hexwool:wool_colorizer");
 	}
+	
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)

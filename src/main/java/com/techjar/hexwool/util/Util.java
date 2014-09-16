@@ -1,10 +1,14 @@
 package com.techjar.hexwool.util;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.techjar.hexwool.api.IColorizable;
@@ -12,6 +16,44 @@ import com.techjar.hexwool.block.HexWoolBlocks;
 
 public class Util {
 	private static final char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+	
+	public static void setFaceBrightnessColor(Block block, IBlockAccess world, int x, int y, int z, ForgeDirection direction, RenderBlocks renderer, Tessellator tessellator, float red, float green, float blue) {
+		float topMult = 1.0F;
+		float bottomMult = 0.5F;
+		float nsMult = 0.8F;
+		float ewMult = 0.6F;
+
+		int brightness = block.getMixedBrightnessForBlock(world, x, y, z);
+
+		switch(direction) {
+			case UP:
+				tessellator.setBrightness(renderer.renderMaxY < 1.0D ? brightness : block.getMixedBrightnessForBlock(world, x, y + 1, z));
+				tessellator.setColorOpaque_F(topMult * red, topMult * green, topMult * blue);
+				break;
+			case DOWN:
+				tessellator.setBrightness(renderer.renderMinY > 0.0D ? brightness : block.getMixedBrightnessForBlock(world, x, y - 1, z));
+				tessellator.setColorOpaque_F(bottomMult * red, bottomMult * green, bottomMult * blue);
+				break;
+			case NORTH:
+				tessellator.setBrightness(renderer.renderMinZ > 0.0D ? brightness : block.getMixedBrightnessForBlock(world, x, y, z - 1));
+				tessellator.setColorOpaque_F(nsMult * red, nsMult * green, nsMult * blue);
+				break;
+			case SOUTH:
+				tessellator.setBrightness(renderer.renderMaxZ < 1.0D ? brightness : block.getMixedBrightnessForBlock(world, x, y, z + 1));
+				tessellator.setColorOpaque_F(nsMult * red, nsMult * green, nsMult * blue);
+				break;
+			case WEST:
+				tessellator.setBrightness(renderer.renderMinX > 0.0D ? brightness : block.getMixedBrightnessForBlock(world, x - 1, y, z));
+				tessellator.setColorOpaque_F(ewMult * red, ewMult * green, ewMult * blue);
+				break;
+			case EAST:
+				tessellator.setBrightness(renderer.renderMaxX < 1.0D ? brightness : block.getMixedBrightnessForBlock(world, x + 1, y, z));
+				tessellator.setColorOpaque_F(ewMult * red, ewMult * green, ewMult * blue);
+				break;
+			default:
+				break;
+		}
+	}
 
 	public static boolean itemMatchesOre(ItemStack item, String ore) {
 		for (ItemStack oreItem : OreDictionary.getOres(ore)) {

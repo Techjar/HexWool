@@ -4,6 +4,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.block.Block;
 import net.minecraft.block.Block.SoundType;
 
 import com.techjar.hexwool.block.HexWoolBlocks;
