@@ -53,12 +53,6 @@ public class BlockColoredBlock extends Block {
 		}
 		return 0xFFFFFF;
 	}
-
-	/*@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		this.blockIcon = iconRegister.registerIcon("IGNORE_THIS_NOT_AN_ERROR");
-	}*/
 	
 	@Override
 	@SideOnly(Side.CLIENT)

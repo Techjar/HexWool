@@ -2,13 +2,16 @@ package com.techjar.hexwool.client.render.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
 import com.techjar.hexwool.block.BlockWoolColorizer;
+import com.techjar.hexwool.util.Util;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -69,29 +72,35 @@ public class RenderBlockWoolColorizer implements ISimpleBlockRenderingHandler {
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		IIcon icon = ((BlockWoolColorizer)block).dishIcon;
 		renderer.renderStandardBlock(block, x, y, z);
+		renderer.setRenderBounds(0.25D, 0.8125D, 0.25D, 0.75D, 1.0F, 0.75D);
 
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.setNormal(0.0F, 1.0F, 0.0F);
+		Util.setFaceBrightnessColor(block, world, x, y, z, ForgeDirection.UP, renderer, tessellator, 1.0F, 1.0F, 1.0F);
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(8.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(16.0D), icon.getInterpolatedV(8.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.25D, icon.getInterpolatedU(16.0D), icon.getInterpolatedV(0.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.25D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(0.0D));
 		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
+		Util.setFaceBrightnessColor(block, world, x, y, z, ForgeDirection.EAST, renderer, tessellator, 1.0F, 1.0F, 1.0F);
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(3.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.25D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(3.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 1.0D, z + 0.25D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(0.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(0.0D));
 		tessellator.setNormal(1.0F, 0.0F, 0.0F);
+		Util.setFaceBrightnessColor(block, world, x, y, z, ForgeDirection.WEST, renderer, tessellator, 1.0F, 1.0F, 1.0F);
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.25D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(6.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(6.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(3.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.25D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(3.0D));
 		tessellator.setNormal(0.0F, 0.0F, -1.0F);
+		Util.setFaceBrightnessColor(block, world, x, y, z, ForgeDirection.SOUTH, renderer, tessellator, 1.0F, 1.0F, 1.0F);
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.25D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(9.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.25D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(9.0D));
 		tessellator.addVertexWithUV(x + 0.75D, y + 1.0D, z + 0.25D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(6.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 1.0D, z + 0.25D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(6.0D));
 		tessellator.setNormal(0.0F, 0.0F, 1.0F);
+		Util.setFaceBrightnessColor(block, world, x, y, z, ForgeDirection.NORTH, renderer, tessellator, 1.0F, 1.0F, 1.0F);
 		tessellator.addVertexWithUV(x + 0.75D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(0.0D), icon.getInterpolatedV(12.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 0.8125D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(12.0D));
 		tessellator.addVertexWithUV(x + 0.25D, y + 1.0D, z + 0.75D, icon.getInterpolatedU(8.0D), icon.getInterpolatedV(9.0D));
