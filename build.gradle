@@ -60,8 +60,9 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    compile "mcp.mobius.waila:Waila:1.5.2a"
-    compile 'org.projectlombok:lombok:1.12.6'
+    compile "mcp.mobius.waila:Waila:1.5.4a_1.7.10"
+    compile "org.projectlombok:lombok:1.12.6"
+    compile "codechicken:NotEnoughItems:1.7.10-1.0.3.51"
 }
 
 processResources
