@@ -1,8 +1,0 @@
-dir.forge=../../forge/
-dir.source=./
-dir.build=../../build/HexWool/
-dir.modproject=HexWool
-keystore.location=../../../keystore.jks
-keystore.alias=alias
-keystore.password=password
-jenkins=false
