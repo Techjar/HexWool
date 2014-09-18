@@ -27,7 +27,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@Optional.Interface(iface = "dan200.computer.api.IPeripheral", modid = "ComputerCraft")
+@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 public class TileEntityWoolColorizer extends TileEntity implements IInventory, ISidedInventory, IPeripheral {
 	Random random = new Random();
 	public String colorCode = "";
