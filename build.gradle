@@ -62,7 +62,6 @@ dependencies {
 
     compile "mcp.mobius.waila:Waila:1.5.4a_1.7.10"
     compile "org.projectlombok:lombok:1.12.6"
-    compile "codechicken:NotEnoughItems:1.7.10-1.0.3.51"
 }
 
 processResources
