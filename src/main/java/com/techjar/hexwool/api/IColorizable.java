@@ -17,7 +17,7 @@ public interface IColorizable {
 	 *            the color of the ItemStack to check
 	 * @return whether or not the ItemStack has a color set
 	 */
-	public boolean hasColor(ItemStack itemStack);
+	boolean hasColor(ItemStack itemStack);
 
 	/**
 	 * Returns the color of the ItemStack passed to it as an integer.
@@ -26,7 +26,7 @@ public interface IColorizable {
 	 *            the ItemStack to get the color of
 	 * @return the color of the ItemStack to return the color of
 	 */
-	public int getColor(ItemStack itemStack);
+	int getColor(ItemStack itemStack);
 
 	/**
 	 * Returns a copy of the ItemStack with the color set to the one passed to
@@ -38,5 +38,5 @@ public interface IColorizable {
 	 *            the color to be set
 	 * @return the colorized ItemStack
 	 */
-	public ItemStack colorize(ItemStack itemStack, int color);
+	ItemStack colorize(ItemStack itemStack, int color);
 }

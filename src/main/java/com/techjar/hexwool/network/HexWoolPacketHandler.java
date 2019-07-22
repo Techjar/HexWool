@@ -7,10 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 
 import com.techjar.hexwool.HexWool;
-import com.techjar.hexwool.util.HexWoolLog;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import com.techjar.hexwool.util.LogHelper;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Sharable
 public class HexWoolPacketHandler extends SimpleChannelInboundHandler<IPacket> {
@@ -27,7 +26,7 @@ public class HexWoolPacketHandler extends SimpleChannelInboundHandler<IPacket> {
 				msg.handleServer(player);
 				break;
 			default:
-				HexWoolLog.severe("Impossible scenario encountered! Effective side is neither server nor client!");
+				LogHelper.severe("Impossible scenario encountered! Effective side is neither server nor client!");
 				break;
 		}
 	}

@@ -1,19 +1,10 @@
 package com.techjar.hexwool.tileentity;
 
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityColoredWool extends TileEntity {
 	public int color = 0xFFFFFF;
-
-	@Override
-	public boolean canUpdate() {
-		return false;
-	}
 	
 	@Override
 	public boolean shouldRenderInPass(int pass) {
@@ -21,27 +12,29 @@ public class TileEntityColoredWool extends TileEntity {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
-		tagCompound.setInteger("color", color);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound.setInteger("Color", color);
+		return super.writeToNBT(tagCompound);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		color = tagCompound.getInteger("color");
-		
+		color = tagCompound.getInteger("Color");
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		tagCompound.setInteger("c", color);
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, tagCompound);
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("x", pos.getX());
+		tag.setInteger("y", pos.getY());
+		tag.setInteger("z", pos.getZ());
+		tag.setInteger("c", color);
+		return tag;
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager network, S35PacketUpdateTileEntity packet) {
-		this.color = packet.func_148857_g().getInteger("c");
+	public void handleUpdateTag(NBTTagCompound tag) {
+		this.color = tag.getInteger("c");
 	}
 }

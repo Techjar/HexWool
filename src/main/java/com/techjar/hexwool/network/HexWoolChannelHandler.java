@@ -1,19 +1,19 @@
 package com.techjar.hexwool.network;
 
+import java.util.EnumMap;
+
+import com.techjar.hexwool.HexWool;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.EnumMap;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import com.techjar.hexwool.network.packet.PacketGuiAction;
-
-import cpw.mods.fml.common.network.FMLEmbeddedChannel;
-import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
-import cpw.mods.fml.common.network.FMLOutboundHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
+import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class HexWoolChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket> {
 	private EnumMap<Side, FMLEmbeddedChannel> channels;
@@ -24,7 +24,7 @@ public class HexWoolChannelHandler extends FMLIndexedMessageToMessageCodec<IPack
 
 	public static HexWoolChannelHandler init() {
 		HexWoolChannelHandler channelHandler = new HexWoolChannelHandler();
-		channelHandler.channels = NetworkRegistry.INSTANCE.newChannel("HexWool", channelHandler, new HexWoolPacketHandler());
+		channelHandler.channels = NetworkRegistry.INSTANCE.newChannel(HexWool.ID, channelHandler, new HexWoolPacketHandler());
 		return channelHandler;
 	}
 

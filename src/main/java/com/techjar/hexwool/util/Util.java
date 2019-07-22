@@ -24,16 +24,16 @@ public class Util {
 
 	public static Object getItemOrBlockFromStack(ItemStack itemStack) {
 		Block block = Block.getBlockFromItem(itemStack.getItem());
-		if (block == Blocks.air || block == null)
+		if (block == Blocks.AIR || block == null)
 			return itemStack.getItem();
 		return block;
 	}
 
 	public static boolean canColorizeItem(ItemStack itemStack, int color) {
-		if (itemMatchesOre(itemStack, "cloth"))
+		if (itemMatchesOre(itemStack, "wool"))
 			return true;
 		if (color != -1) {
-			if (itemStack.getItem() == Items.leather_boots || itemStack.getItem() == Items.leather_chestplate || itemStack.getItem() == Items.leather_helmet || itemStack.getItem() == Items.leather_leggings)
+			if (itemStack.getItem() == Items.LEATHER_BOOTS || itemStack.getItem() == Items.LEATHER_CHESTPLATE || itemStack.getItem() == Items.LEATHER_HELMET || itemStack.getItem() == Items.LEATHER_LEGGINGS)
 				return true;
 			Object itemObj = getItemOrBlockFromStack(itemStack);
 			return itemObj instanceof IColorizable;
@@ -43,12 +43,12 @@ public class Util {
 
 	public static boolean getItemHasColor(ItemStack itemStack) {
 		itemStack = itemStack.copy();
-		if (itemStack.getItem() == Items.leather_boots || itemStack.getItem() == Items.leather_chestplate || itemStack.getItem() == Items.leather_helmet || itemStack.getItem() == Items.leather_leggings) {
+		if (itemStack.getItem() == Items.LEATHER_BOOTS || itemStack.getItem() == Items.LEATHER_CHESTPLATE || itemStack.getItem() == Items.LEATHER_HELMET || itemStack.getItem() == Items.LEATHER_LEGGINGS) {
 			if (itemStack.hasTagCompound())
 				return itemStack.getTagCompound().getCompoundTag("display").hasKey("color");
-		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.coloredWool) {
+		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.COLORED_WOOL) {
 			if (itemStack.hasTagCompound())
-				return itemStack.getTagCompound().hasKey("color");
+				return itemStack.getTagCompound().hasKey("Color");
 		} else {
 			Object itemObj = getItemOrBlockFromStack(itemStack);
 			if (itemObj instanceof IColorizable) {
@@ -60,12 +60,12 @@ public class Util {
 
 	public static int getItemColor(ItemStack itemStack) {
 		itemStack = itemStack.copy();
-		if (itemStack.getItem() == Items.leather_boots || itemStack.getItem() == Items.leather_chestplate || itemStack.getItem() == Items.leather_helmet || itemStack.getItem() == Items.leather_leggings) {
+		if (itemStack.getItem() == Items.LEATHER_BOOTS || itemStack.getItem() == Items.LEATHER_CHESTPLATE || itemStack.getItem() == Items.LEATHER_HELMET || itemStack.getItem() == Items.LEATHER_LEGGINGS) {
 			if (itemStack.hasTagCompound())
 				return itemStack.getTagCompound().getCompoundTag("display").getInteger("color");
-		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.coloredWool) {
+		} else if (Block.getBlockFromItem(itemStack.getItem()) == HexWoolBlocks.COLORED_WOOL) {
 			if (itemStack.hasTagCompound())
-				return itemStack.getTagCompound().getInteger("color");
+				return itemStack.getTagCompound().getInteger("Color");
 		} else {
 			Object itemObj = getItemOrBlockFromStack(itemStack);
 			if (itemObj instanceof IColorizable) {
@@ -77,25 +77,37 @@ public class Util {
 
 	public static ItemStack colorizeItem(ItemStack itemStack, int color) {
 		itemStack = itemStack.copy();
-		if (itemStack.getItem() == Items.leather_boots || itemStack.getItem() == Items.leather_chestplate || itemStack.getItem() == Items.leather_helmet || itemStack.getItem() == Items.leather_leggings) {
+		if (itemStack.getItem() == Items.LEATHER_BOOTS || itemStack.getItem() == Items.LEATHER_CHESTPLATE || itemStack.getItem() == Items.LEATHER_HELMET || itemStack.getItem() == Items.LEATHER_LEGGINGS) {
 			if (!itemStack.hasTagCompound())
 				itemStack.setTagCompound(new NBTTagCompound());
 			if (!itemStack.getTagCompound().hasKey("display"))
 				itemStack.getTagCompound().setTag("display", new NBTTagCompound());
 			itemStack.getTagCompound().getCompoundTag("display").setInteger("color", color);
 		}
-		if (itemMatchesOre(itemStack, "cloth")) {
-			if (Block.getBlockFromItem(itemStack.getItem()) != HexWoolBlocks.coloredWool) {
-				itemStack = new ItemStack(HexWoolBlocks.coloredWool, itemStack.stackSize);
+		if (itemMatchesOre(itemStack, "wool")) {
+			if (Block.getBlockFromItem(itemStack.getItem()) != HexWoolBlocks.COLORED_WOOL) {
+				itemStack = new ItemStack(HexWoolBlocks.COLORED_WOOL, itemStack.getCount());
 			}
 			if (!itemStack.hasTagCompound())
 				itemStack.setTagCompound(new NBTTagCompound());
-			itemStack.getTagCompound().setInteger("color", color);
+			itemStack.getTagCompound().setInteger("Color", color);
 		}
 		Object itemObj = getItemOrBlockFromStack(itemStack);
 		if (itemObj instanceof IColorizable) {
 			itemStack = ((IColorizable)itemObj).colorize(itemStack, color);
 		}
+		return itemStack;
+	}
+
+	public static ItemStack growItemStack(ItemStack stack, int amount) {
+		ItemStack itemStack = stack.copy();
+		itemStack.grow(amount);
+		return itemStack;
+	}
+
+	public static ItemStack shrinkItemStack(ItemStack stack, int amount) {
+		ItemStack itemStack = stack.copy();
+		itemStack.shrink(amount);
 		return itemStack;
 	}
 

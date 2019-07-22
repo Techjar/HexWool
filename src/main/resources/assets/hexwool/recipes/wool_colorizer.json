@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ibi",
+    "www",
+    "iwi"
+  ],
+  "key": {
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "wool"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "b": {
+      "item": "minecraft:bowl"
+    }
+  },
+  "result": {
+    "item": "hexwool:wool_colorizer",
+    "count": 1
+  }
+}

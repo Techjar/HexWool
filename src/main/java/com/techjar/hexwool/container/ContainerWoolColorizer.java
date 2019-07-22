@@ -1,10 +1,12 @@
 package com.techjar.hexwool.container;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -12,78 +14,99 @@ import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.network.packet.PacketGuiAction;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 import com.techjar.hexwool.util.Util;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerWoolColorizer extends Container {
 	public TileEntityWoolColorizer tileEntity;
-	public EntityPlayer lastEditor;
-	private String oldColorCode = "";
+	private String lastColorCode = "";
 	private int lastTicks;
+	private int lastCyanDye;
+	private int lastMagentaDye;
+	private int lastYellowDye;
+	private int lastBlackDye;
 
 	public ContainerWoolColorizer(InventoryPlayer inventoryPlayer, TileEntityWoolColorizer tile) {
 		tileEntity = tile;
 
-		addSlotToContainer(new SlotColorizer(tileEntity, 0, 17, 21));
-		addSlotToContainer(new SlotColorizer(tileEntity, 1, 53, 21));
+		IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+		addSlotToContainer(new SlotItemHandler(itemHandler, 0, 17, 21));
+		addSlotToContainer(new SlotItemHandler(itemHandler, 1, 53, 21));
 		for (int i = 0; i < 4; i++) {
-			addSlotToContainer(new SlotColorizer(tileEntity, i + 2, 8 + i * 18, 47));
+			addSlotToContainer(new SlotItemHandler(itemHandler, i + 2, 8 + i * 18, 47));
 		}
 		bindPlayerInventory(inventoryPlayer);
 	}
 
 	@Override
-	public void addCraftingToCrafters(ICrafting par1ICrafting) {
-		super.addCraftingToCrafters(par1ICrafting);
-		par1ICrafting.sendProgressBarUpdate(this, 0, this.tileEntity.ticks);
+	public void addListener(IContainerListener listener) {
+		super.addListener(listener);
+		listener.sendWindowProperty(this, 0, tileEntity.ticks);
+		listener.sendWindowProperty(this, 1, tileEntity.cyanDye);
+		listener.sendWindowProperty(this, 2, tileEntity.magentaDye);
+		listener.sendWindowProperty(this, 3, tileEntity.yellowDye);
+		listener.sendWindowProperty(this, 4, tileEntity.blackDye);
+		if (listener instanceof EntityPlayerMP)
+			HexWool.packetPipeline.sendToPlayer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, tileEntity.colorCode), (EntityPlayerMP)listener);
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tileEntity.isUseableByPlayer(player);
+		return tileEntity.canInteractWith(player);
 	}
 
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		if (tileEntity.dyesChanged) {
-			tileEntity.dyesChanged = false;
-			for (int i = 0; i < this.crafters.size(); ++i) {
-				ICrafting crafter = (ICrafting)this.crafters.get(i);
-				if (crafter instanceof EntityPlayerMP) {
-					HexWool.packetPipeline.sendToPlayer(new PacketGuiAction(PacketGuiAction.SET_DYE_AMOUNTS, String.format("%s;%s;%s;%s", tileEntity.cyanDye, tileEntity.magentaDye, tileEntity.yellowDye, tileEntity.blackDye)), (EntityPlayerMP)crafter);
-				}
-			}
-		}
-		if (!oldColorCode.equals(tileEntity.colorCode)) {
-			oldColorCode = tileEntity.colorCode;
-			for (int i = 0; i < this.crafters.size(); ++i) {
-				ICrafting crafter = (ICrafting)this.crafters.get(i);
-				if (crafter instanceof EntityPlayerMP) {
-					if (crafter == lastEditor) {
-						lastEditor = null;
-						continue;
-					}
-					HexWool.packetPipeline.sendToPlayer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, tileEntity.colorCode), (EntityPlayerMP)crafter);
+		for (IContainerListener listener : listeners) {
+			if (lastTicks != tileEntity.ticks)
+				listener.sendWindowProperty(this, 0, tileEntity.ticks);
+			if (lastCyanDye != tileEntity.cyanDye)
+				listener.sendWindowProperty(this, 1, tileEntity.cyanDye);
+			if (lastMagentaDye != tileEntity.magentaDye)
+				listener.sendWindowProperty(this, 2, tileEntity.magentaDye);
+			if (lastYellowDye != tileEntity.yellowDye)
+				listener.sendWindowProperty(this, 3, tileEntity.yellowDye);
+			if (lastBlackDye != tileEntity.blackDye)
+				listener.sendWindowProperty(this, 4, tileEntity.blackDye);
+
+			if (listener instanceof EntityPlayerMP) {
+				if (!lastColorCode.equals(tileEntity.colorCode)) {
+					HexWool.packetPipeline.sendToPlayer(new PacketGuiAction(PacketGuiAction.SET_HEX_CODE, tileEntity.colorCode), (EntityPlayerMP)listener);
 				}
 			}
 		}
 
-		if (this.lastTicks != this.tileEntity.ticks) {
-			this.lastTicks = this.tileEntity.ticks;
-			for (int i = 0; i < this.crafters.size(); ++i) {
-				ICrafting crafter = (ICrafting)this.crafters.get(i);
-				crafter.sendProgressBarUpdate(this, 0, this.tileEntity.ticks);
-			}
-		}
+		lastColorCode = tileEntity.colorCode;
+		lastTicks = tileEntity.ticks;
+		lastCyanDye = tileEntity.cyanDye;
+		lastMagentaDye = tileEntity.magentaDye;
+		lastYellowDye = tileEntity.yellowDye;
+		lastBlackDye = tileEntity.blackDye;
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int par1, int par2) {
-		if (par1 == 0) {
-			this.tileEntity.ticks = par2;
+	public void updateProgressBar(int id, int data) {
+		switch (id) {
+			case 0:
+				tileEntity.ticks = data;
+				break;
+			case 1:
+				tileEntity.cyanDye = data;
+				break;
+			case 2:
+				tileEntity.magentaDye = data;
+				break;
+			case 3:
+				tileEntity.yellowDye = data;
+				break;
+			case 4:
+				tileEntity.blackDye = data;
+				break;
 		}
 	}
 
@@ -101,8 +124,8 @@ public class ContainerWoolColorizer extends Container {
 
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-		ItemStack stack = null;
-		Slot slotObject = (Slot)inventorySlots.get(slot);
+		ItemStack stack = ItemStack.EMPTY;
+		Slot slotObject = inventorySlots.get(slot);
 
 		if (slotObject != null && slotObject.getHasStack()) {
 			ItemStack stackInSlot = slotObject.getStack();
@@ -110,40 +133,40 @@ public class ContainerWoolColorizer extends Container {
 
 			if (slot < 6) {
 				if (!this.mergeItemStack(stackInSlot, 6, 42, true)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			} else if (Util.canColorizeItem(stackInSlot, 0)) {
 				if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			} else if (Util.itemMatchesOre(stackInSlot, "dyeCyan")) {
 				if (!this.mergeItemStack(stackInSlot, 2, 3, false)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			} else if (Util.itemMatchesOre(stackInSlot, "dyeMagenta")) {
 				if (!this.mergeItemStack(stackInSlot, 3, 4, false)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			} else if (Util.itemMatchesOre(stackInSlot, "dyeYellow")) {
 				if (!this.mergeItemStack(stackInSlot, 4, 5, false)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			} else if (Util.itemMatchesOre(stackInSlot, "dyeBlack")) {
 				if (!this.mergeItemStack(stackInSlot, 5, 6, false)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}
 
-			if (stackInSlot.stackSize == 0) {
-				slotObject.putStack(null);
+			if (stackInSlot.getCount() == 0) {
+				slotObject.putStack(ItemStack.EMPTY);
 			} else {
 				slotObject.onSlotChanged();
 			}
 
-			if (stackInSlot.stackSize == stack.stackSize) {
-				return null;
+			if (stackInSlot.getCount() == stack.getCount()) {
+				return ItemStack.EMPTY;
 			}
-			slotObject.onPickupFromSlot(player, stackInSlot);
+			slotObject.onTake(player, stackInSlot);
 		}
 		return stack;
 	}

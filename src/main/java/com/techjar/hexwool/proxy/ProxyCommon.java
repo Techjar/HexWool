@@ -1,47 +1,27 @@
 package com.techjar.hexwool.proxy;
 
-import java.lang.reflect.*;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockFire;
+import com.techjar.hexwool.HexWool;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import com.techjar.hexwool.block.BlockColoredWool;
-import com.techjar.hexwool.block.BlockWoolColorizer;
 import com.techjar.hexwool.block.HexWoolBlocks;
-import com.techjar.hexwool.item.ItemBlockColoredWool;
 import com.techjar.hexwool.tileentity.TileEntityColoredWool;
 import com.techjar.hexwool.tileentity.TileEntityWoolColorizer;
 
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.common.registry.GameRegistry;
-
 public class ProxyCommon {
-	public void registerBlocks() {
-		GameRegistry.registerBlock(HexWoolBlocks.woolColorizer = new BlockWoolColorizer(), "wool_colorizer");
-		GameRegistry.registerBlock(HexWoolBlocks.coloredWool = new BlockColoredWool(), ItemBlockColoredWool.class, "colored_wool");
-		Blocks.fire.setFireInfo(HexWoolBlocks.coloredWool, 30, 60);
-	}
-
 	public void registerTileEntities() {
-		GameRegistry.registerTileEntity(TileEntityColoredWool.class, "HW_ColoredWool");
-		GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, "HW_WoolColorizer");
+		GameRegistry.registerTileEntity(TileEntityColoredWool.class, new ResourceLocation(HexWool.ID, "colored_wool"));
+		GameRegistry.registerTileEntity(TileEntityWoolColorizer.class, new ResourceLocation(HexWool.ID, "wool_colorizer"));
 	}
 	
 	public void registerOres() {
-		OreDictionary.registerOre("cloth", new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE));
-		OreDictionary.registerOre("cloth", new ItemStack(HexWoolBlocks.coloredWool, 1, OreDictionary.WILDCARD_VALUE));
-	}
-
-	public void registerRecipes() {
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(HexWoolBlocks.woolColorizer), "ibi", "www", "iwi", 'w', "cloth", 'i', new ItemStack(Items.iron_ingot), 'b', new ItemStack(Items.bowl)));
+		OreDictionary.registerOre("wool", new ItemStack(HexWoolBlocks.COLORED_WOOL, 1));
 	}
 
 	public void registerRenderers() {
@@ -51,16 +31,12 @@ public class ProxyCommon {
 	public void fireInterModComms() {
 		FMLInterModComms.sendMessage("appliedenergistics2", "whitelist-spatial", "com.techjar.hexwool.tileentity.TileEntityColoredWool");
 		FMLInterModComms.sendMessage("appliedenergistics2", "whitelist-spatial", "com.techjar.hexwool.tileentity.TileEntityWoolColorizer");
-		FMLInterModComms.sendMessage("Waila", "register", "com.techjar.hexwool.integration.WailaDataProvider.callbackRegister");
-	}
-
-	public int getBlockRender(Block block) {
-		return -1;
+		FMLInterModComms.sendMessage("waila", "register", "com.techjar.hexwool.integration.WailaDataProvider.callbackRegister");
 	}
 
 	public EntityPlayer getPlayerFromNetHandler(INetHandler netHandler) {
 		if (netHandler instanceof NetHandlerPlayServer) {
-			return ((NetHandlerPlayServer)netHandler).playerEntity;
+			return ((NetHandlerPlayServer)netHandler).player;
 		}
 		return null;
 	}

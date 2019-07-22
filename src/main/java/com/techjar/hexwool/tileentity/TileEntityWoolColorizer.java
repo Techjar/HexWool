@@ -2,33 +2,32 @@ package com.techjar.hexwool.tileentity;
 
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.techjar.hexwool.util.ItemStackHandlerWrapper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 import com.techjar.hexwool.Config;
-import com.techjar.hexwool.HexWool;
 import com.techjar.hexwool.util.Util;
 import com.techjar.hexwool.util.Util.CMYKColor;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
-@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
-public class TileEntityWoolColorizer extends TileEntity implements IInventory, ISidedInventory, IPeripheral {
+public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 	Random random = new Random();
 	public String colorCode = "";
 	public int cyanDye;
@@ -37,74 +36,104 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 	public int blackDye;
 	public boolean colorizing;
 	public int ticks;
-	public boolean dyesChanged;
-	private ItemStack[] inv;
-	private ItemStack hiddenStack;
+	//private NonNullList<ItemStack> inv = NonNullList.withSize(7, ItemStack.EMPTY);
+	private ItemStackHandler items = new ItemStackHandler(7) {
+		@Override
+		protected void onContentsChanged(int slot) {
+			super.onContentsChanged(slot);
+			if (slot == 0 || slot == 1)
+				TileEntityWoolColorizer.this.markDirtyAndSync();
+			else
+				TileEntityWoolColorizer.this.markDirty();
+		}
+
+		@Override
+		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+			switch (slot) {
+				case 0:
+					return Util.canColorizeItem(stack, 0);
+				case 2:
+					return Util.itemMatchesOre(stack, "dyeCyan");
+				case 3:
+					return Util.itemMatchesOre(stack, "dyeMagenta");
+				case 4:
+					return Util.itemMatchesOre(stack, "dyeYellow");
+				case 5:
+					return Util.itemMatchesOre(stack, "dyeBlack");
+				default:
+					return false;
+			}
+		}
+
+		@Nonnull
+		@Override
+		public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+			if (!isItemValid(slot, stack))
+				return stack;
+			return super.insertItem(slot, stack, simulate);
+		}
+	};
 
 	public TileEntityWoolColorizer() {
-		inv = new ItemStack[6];
 	}
 
 	public boolean colorizeWool(int color) {
-		ItemStack itemStack = inv[0];
+		final ItemStack inputStack = items.getStackInSlot(0);
+		final ItemStack outputStack = items.getStackInSlot(1);
 		if (!Config.creative) {
-			if (itemStack != null && hasRequiredDyes(color) && Util.canColorizeItem(itemStack, color)) {
-				if (Util.getItemHasColor(itemStack) && Util.getItemColor(itemStack) == color) {
-					if (inv[1] == null) {
-						inv[1] = itemStack;
-						inv[0] = null;
-						this.markDirty();
+			if (!inputStack.isEmpty() && hasRequiredDyes(color) && Util.canColorizeItem(inputStack, color)) {
+				if (Util.getItemHasColor(inputStack) && Util.getItemColor(inputStack) == color) {
+					if (outputStack.isEmpty()) {
+						items.setStackInSlot(1, inputStack.copy());
+						items.setStackInSlot(0, ItemStack.EMPTY);
+						this.markDirtyAndSync();
 						return true;
 					} else {
-						int maxStack = inv[1].getMaxStackSize();
-						if (inv[1].stackSize < maxStack) {
-							itemStack = Util.colorizeItem(itemStack, color);
+						int maxStack = outputStack.getMaxStackSize();
+						if (outputStack.getCount() < maxStack) {
+							ItemStack resultStack = Util.colorizeItem(inputStack, color);
 
-							if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
+							if (resultStack.isItemEqual(outputStack) && ItemStack.areItemStackTagsEqual(resultStack, outputStack)) {
 								int amountMade;
-								if (itemStack.stackSize + inv[1].stackSize > maxStack) {
-									amountMade = maxStack - inv[1].stackSize;
+								if (resultStack.getCount() + outputStack.getCount() > maxStack) {
+									amountMade = maxStack - outputStack.getCount();
 								} else {
-									amountMade = itemStack.stackSize;
+									amountMade = resultStack.getCount();
 								}
 
-								inv[1].stackSize += amountMade;
-								inv[0].stackSize -= amountMade;
-								if (inv[0].stackSize < 1)
-									inv[0] = null;
-								this.markDirty();
+								items.setStackInSlot(1, Util.growItemStack(outputStack, amountMade));
+								items.setStackInSlot(0, Util.shrinkItemStack(inputStack, amountMade));
+								this.markDirtyAndSync();
 								return true;
 							}
 						}
 					}
 					return false;
 				}
-				int amountMade = 0;
-				if (inv[1] != null) {
-					int maxStack = inv[1].getMaxStackSize();
-					if (inv[1].stackSize < maxStack) {
-						itemStack = Util.colorizeItem(itemStack, color);
 
-						if (Util.getItemHasColor(inv[1]) && Util.getItemColor(inv[1]) == color) {
-							if (itemStack.stackSize + inv[1].stackSize > maxStack) {
-								amountMade = maxStack - inv[1].stackSize;
+				int amountMade = 0;
+				if (!outputStack.isEmpty()) {
+					int maxStack = outputStack.getMaxStackSize();
+					if (outputStack.getCount() < maxStack) {
+						ItemStack resultStack = Util.colorizeItem(inputStack, color);
+
+						if (Util.getItemHasColor(outputStack) && Util.getItemColor(outputStack) == color) {
+							if (resultStack.getCount() + outputStack.getCount() > maxStack) {
+								amountMade = maxStack - outputStack.getCount();
 							} else {
-								amountMade = itemStack.stackSize;
+								amountMade = resultStack.getCount();
 							}
 						}
 					}
 				} else {
-					amountMade = itemStack.stackSize;
+					amountMade = inputStack.getCount();
 				}
 
 				if (amountMade > 0) {
 					int[] dyes = getRequiredDyes(color);
-					int cyan = dyes[0];
-					int magenta = dyes[1];
-					int yellow = dyes[2];
-					int black = dyes[3];
+					int cyan = dyes[0], magenta = dyes[1], yellow = dyes[2], black = dyes[3];
 					for (int i = 0; i < amountMade; i++) {
-						checkDyes();
+						fillDyes();
 						if (cyanDye < cyan || magentaDye < magenta || yellowDye < yellow || blackDye < black) {
 							break;
 						}
@@ -113,48 +142,45 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 						magentaDye -= magenta;
 						yellowDye -= yellow;
 						blackDye -= black;
-						dyesChanged = true;
 
-						inv[0].stackSize--;
-						if (hiddenStack != null)
-							hiddenStack.stackSize++;
+						ItemStack hiddenStack = items.getStackInSlot(6);
+						if (!hiddenStack.isEmpty())
+							items.setStackInSlot(6, Util.growItemStack(hiddenStack, 1));
 						else {
-							hiddenStack = Util.colorizeItem(inv[0], color);
-							hiddenStack.stackSize = 1;
+							ItemStack itemStack = Util.colorizeItem(inputStack, color);
+							itemStack.setCount(1);
+							items.setStackInSlot(6, itemStack);
 						}
+						items.setStackInSlot(0, Util.shrinkItemStack(items.getStackInSlot(0), 1));
 					}
-					if (inv[0].stackSize < 1)
-						inv[0] = null;
 					this.colorizing = true;
-					this.markDirty();
+					this.markDirtyAndSync();
 					return true;
 				}
 			}
 		} else {
-			if (itemStack != null && Util.canColorizeItem(itemStack, color)) {
-				if (inv[1] == null) {
-					inv[1] = Util.colorizeItem(itemStack, color);
-					inv[0] = null;
-					this.markDirty();
+			if (!inputStack.isEmpty() && Util.canColorizeItem(inputStack, color)) {
+				if (outputStack.isEmpty()) {
+					items.setStackInSlot(1, Util.colorizeItem(inputStack, color));
+					items.setStackInSlot(0, ItemStack.EMPTY);
+					this.markDirtyAndSync();
 					return true;
 				} else {
-					int maxStack = inv[1].getMaxStackSize();
-					if (inv[1].stackSize < maxStack) {
-						itemStack = Util.colorizeItem(itemStack, color);
+					int maxStack = outputStack.getMaxStackSize();
+					if (outputStack.getCount() < maxStack) {
+						ItemStack resultStack = Util.colorizeItem(inputStack, color);
 
-						if (itemStack.isItemEqual(inv[1]) && ItemStack.areItemStackTagsEqual(itemStack, inv[1])) {
+						if (resultStack.isItemEqual(outputStack) && ItemStack.areItemStackTagsEqual(resultStack, outputStack)) {
 							int amountMade;
-							if (itemStack.stackSize + inv[1].stackSize > maxStack) {
-								amountMade = maxStack - inv[1].stackSize;
+							if (resultStack.getCount() + outputStack.getCount() > maxStack) {
+								amountMade = maxStack - outputStack.getCount();
 							} else {
-								amountMade = itemStack.stackSize;
+								amountMade = resultStack.getCount();
 							}
 
-							inv[1].stackSize += amountMade;
-							inv[0].stackSize -= amountMade;
-							if (inv[0].stackSize < 1)
-								inv[0] = null;
-							this.markDirty();
+							items.setStackInSlot(1, Util.growItemStack(outputStack, amountMade));
+							items.setStackInSlot(0, Util.shrinkItemStack(inputStack, amountMade));
+							this.markDirtyAndSync();
 							return true;
 						}
 					}
@@ -162,6 +188,12 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 			}
 		}
 		return false;
+	}
+
+	private void markDirtyAndSync() {
+		this.markDirty();
+		IBlockState blockState = world.getBlockState(pos);
+		world.notifyBlockUpdate(pos, blockState, blockState, 2);
 	}
 
 	public int[] getRequiredDyes(int color) {
@@ -192,78 +224,62 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 		return this.ticks * scale / Config.colorizingTicks;
 	}
 
-	@Override
+	/*@Override
 	public int getSizeInventory() {
-		return inv.length;
+		return inv.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return inv.stream().allMatch(ItemStack::isEmpty);
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		return inv[slot];
+		return inv.get(slot);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int slot, int amount) {
-		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
-			if (stack.stackSize <= amount) {
-				setInventorySlotContents(slot, null);
-			} else {
-				stack = stack.splitStack(amount);
-				if (stack.stackSize == 0) {
-					setInventorySlotContents(slot, null);
-				}
-			}
-		}
-		return stack;
+		ItemStack itemStack = ItemStackHelper.getAndSplit(inv, slot, amount);
+		if (!itemStack.isEmpty())
+			this.markDirtyAndSync();
+		return itemStack;
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int slot) {
-		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
-			setInventorySlotContents(slot, null);
+	public ItemStack removeStackFromSlot(int index) {
+		ItemStack itemStack = inv.get(index);
+		if (itemStack.isEmpty()) {
+			return ItemStack.EMPTY;
+		} else {
+			inv.set(index, ItemStack.EMPTY);
+			return itemStack;
 		}
-		return stack;
 	}
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack itemStack) {
-		inv[slot] = itemStack;
-		if (itemStack != null && itemStack.stackSize > getInventoryStackLimit()) {
-			itemStack.stackSize = getInventoryStackLimit();
+		inv.set(slot, itemStack);
+		if (!itemStack.isEmpty() && itemStack.getCount() > getInventoryStackLimit()) {
+			itemStack.setCount(getInventoryStackLimit());
 		}
-		this.markDirty();
+		this.markDirtyAndSync();
 	}
 
 	@Override
-	public String getInventoryName() {
+	public String getName() {
 		return "tile.hexwool.block.woolColorizer.name";
 	}
 
 	@Override
-	public boolean hasCustomInventoryName() {
+	public boolean hasCustomName() {
 		return false;
 	}
 
 	@Override
 	public int getInventoryStackLimit() {
 		return 64;
-	}
-
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer player) {
-		return true;
-	}
-
-	@Override
-	public void openInventory() {
-		// Useless
-	}
-
-	@Override
-	public void closeInventory() {
-		// Useless
 	}
 
 	@Override
@@ -286,42 +302,137 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 	}
 
 	@Override
-	public void markDirty() {
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		// super.markDirty();
+	public int getField(int id) {
+		switch (id) {
+			case 0:
+				return this.ticks;
+			case 1:
+				return this.cyanDye;
+			case 2:
+				return this.magentaDye;
+			case 3:
+				return this.yellowDye;
+			case 4:
+				return this.blackDye;
+			default:
+				return 0;
+		}
 	}
 
 	@Override
-	public int[] getAccessibleSlotsFromSide(int side) {
+	public void setField(int id, int value) {
+		switch (id) {
+			case 0:
+				this.ticks = value;
+				break;
+			case 1:
+				this.cyanDye = value;
+				break;
+			case 2:
+				this.magentaDye = value;
+				break;
+			case 3:
+				this.yellowDye = value;
+				break;
+			case 4:
+				this.blackDye = value;
+				break;
+		}
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 5;
+	}
+
+	@Override
+	public void clear() {
+		inv.clear();
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		if (world.getTileEntity(pos) != this) {
+			return false;
+		} else {
+			return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+		}
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public int[] getSlotsForFace(EnumFacing side) {
 		return new int[]{0, 1, 2, 3, 4, 5};
 	}
 
 	@Override
-	public boolean canInsertItem(int slot, ItemStack itemStack, int side) {
-		if (slot == 0 || (slot >= 2 && slot <= 5)) {
-			return true;
-		}
-		return false;
+	public boolean canInsertItem(int slot, ItemStack stack, EnumFacing direction) {
+		return slot == 0 || (slot >= 2 && slot <= 5);
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack itemStack, int side) {
+	public boolean canExtractItem(int slot, ItemStack stack, EnumFacing direction) {
 		if (slot == 1) {
 			return true;
 		}
 		return false;
+	}*/
+
+	public boolean canInteractWith(EntityPlayer player) {
+		return !isInvalid() && player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 
 	@Override
-	public boolean canUpdate() {
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER;
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Nullable
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			if (facing == null) {
+				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(items);
+			} else {
+				return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(new ItemStackHandlerWrapper(items) {
+					@Nonnull
+					@Override
+					public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+						if (slot == 1 || slot == 6)
+							return stack;
+						return super.insertItem(slot, stack, simulate);
+					}
+
+					@Nonnull
+					@Override
+					public ItemStack extractItem(int slot, int amount, boolean simulate) {
+						if (slot != 1)
+							return ItemStack.EMPTY;
+						return super.extractItem(slot, amount, simulate);
+					}
+				});
+			}
+		}
+		return super.getCapability(capability, facing);
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		checkDyes();
-		if (!colorizing && worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
+	public void update() {
+		if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER)
+			return;
+
+		fillDyes();
+		if (!colorizing && world.isBlockPowered(pos)) {
 			if (colorCode.length() == 6) {
 				try {
 					int color = Integer.parseInt(colorCode, 16);
@@ -335,192 +446,95 @@ public class TileEntityWoolColorizer extends TileEntity implements IInventory, I
 			if (this.ticks++ >= Config.colorizingTicks) {
 				this.ticks = 0;
 				this.colorizing = false;
-				if (inv[1] == null)
-					inv[1] = hiddenStack;
+				ItemStack hiddenStack = items.getStackInSlot(6);
+				ItemStack outputStack = items.getStackInSlot(1);
+				if (outputStack.isEmpty())
+					items.setStackInSlot(1, hiddenStack.copy());
 				else
-					inv[1].stackSize += hiddenStack.stackSize;
-				hiddenStack = null;
-				this.markDirty();
+					items.setStackInSlot(1, Util.growItemStack(outputStack, hiddenStack.getCount()));
+				items.setStackInSlot(6, ItemStack.EMPTY);
+				this.markDirtyAndSync();
 			}
 		}
 	}
 
-	public boolean checkDyes() {
-		if (cyanDye <= 1000 - Config.dyePerItem && inv[2] != null && Util.itemMatchesOre(inv[2], "dyeCyan")) {
+	private void fillDyes() {
+		if (cyanDye <= 1000 - Config.dyePerItem && !items.getStackInSlot(2).isEmpty() && Util.itemMatchesOre(items.getStackInSlot(2), "dyeCyan")) {
 			cyanDye += Config.dyePerItem;
-			inv[2].stackSize--;
-			if (inv[2].stackSize < 1)
-				inv[2] = null;
-			dyesChanged = true;
+			items.getStackInSlot(2).shrink(1);
 		}
-		if (magentaDye <= 1000 - Config.dyePerItem && inv[3] != null && Util.itemMatchesOre(inv[3], "dyeMagenta")) {
+		if (magentaDye <= 1000 - Config.dyePerItem && !items.getStackInSlot(3).isEmpty() && Util.itemMatchesOre(items.getStackInSlot(3), "dyeMagenta")) {
 			magentaDye += Config.dyePerItem;
-			inv[3].stackSize--;
-			if (inv[3].stackSize < 1)
-				inv[3] = null;
-			dyesChanged = true;
+			items.getStackInSlot(3).shrink(1);
 		}
-		if (yellowDye <= 1000 - Config.dyePerItem && inv[4] != null && Util.itemMatchesOre(inv[4], "dyeYellow")) {
+		if (yellowDye <= 1000 - Config.dyePerItem && !items.getStackInSlot(4).isEmpty() && Util.itemMatchesOre(items.getStackInSlot(4), "dyeYellow")) {
 			yellowDye += Config.dyePerItem;
-			inv[4].stackSize--;
-			if (inv[4].stackSize < 1)
-				inv[4] = null;
-			dyesChanged = true;
+			items.getStackInSlot(4).shrink(1);
 		}
-		if (blackDye <= 1000 - Config.dyePerItem && inv[5] != null && Util.itemMatchesOre(inv[5], "dyeBlack")) {
+		if (blackDye <= 1000 - Config.dyePerItem && !items.getStackInSlot(5).isEmpty() && Util.itemMatchesOre(items.getStackInSlot(5), "dyeBlack")) {
 			blackDye += Config.dyePerItem;
-			inv[5].stackSize--;
-			if (inv[5].stackSize < 1)
-				inv[5] = null;
-			dyesChanged = true;
+			items.getStackInSlot(5).shrink(1);
 		}
-		return dyesChanged;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		colorCode = tagCompound.getString("colorCode");
-		cyanDye = tagCompound.getInteger("cyanDye");
-		magentaDye = tagCompound.getInteger("magentaDye");
-		yellowDye = tagCompound.getInteger("yellowDye");
-		blackDye = tagCompound.getInteger("blackDye");
-		if (tagCompound.hasKey("colorizing"))
-			colorizing = tagCompound.getBoolean("colorizing");
-		if (tagCompound.hasKey("hiddenStack"))
-			hiddenStack = ItemStack.loadItemStackFromNBT(tagCompound.getCompoundTag("hiddenStack"));
-
-		NBTTagList tagList = tagCompound.getTagList("Inventory", 10);
-		for (int i = 0; i < tagList.tagCount(); i++) {
-			NBTTagCompound tag = (NBTTagCompound)tagList.getCompoundTagAt(i);
-			byte slot = tag.getByte("Slot");
-			if (slot >= 0 && slot < inv.length) {
-				inv[slot] = ItemStack.loadItemStackFromNBT(tag);
-			}
-		}
+		colorCode = tagCompound.getString("ColorCode");
+		cyanDye = tagCompound.getInteger("CyanDye");
+		magentaDye = tagCompound.getInteger("MagentaDye");
+		yellowDye = tagCompound.getInteger("YellowDye");
+		blackDye = tagCompound.getInteger("BlackDye");
+		colorizing = tagCompound.getBoolean("Colorizing");
+		if (tagCompound.hasKey("Inventory"))
+			items.deserializeNBT(tagCompound.getCompoundTag("Inventory"));
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
-		tagCompound.setString("colorCode", colorCode);
-		tagCompound.setInteger("cyanDye", cyanDye);
-		tagCompound.setInteger("magentaDye", magentaDye);
-		tagCompound.setInteger("yellowDye", yellowDye);
-		tagCompound.setInteger("blackDye", blackDye);
-		tagCompound.setBoolean("colorizing", colorizing);
-		if (hiddenStack != null) {
-			NBTTagCompound tag = new NBTTagCompound();
-			hiddenStack.writeToNBT(tag);
-			tagCompound.setTag("hiddenStack", tag);
-		}
-
-		NBTTagList itemList = new NBTTagList();
-		for (int i = 0; i < inv.length; i++) {
-			ItemStack stack = inv[i];
-			if (stack != null) {
-				NBTTagCompound tag = new NBTTagCompound();
-				tag.setByte("Slot", (byte)i);
-				stack.writeToNBT(tag);
-				itemList.appendTag(tag);
-			}
-		}
-		tagCompound.setTag("Inventory", itemList);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound.setString("ColorCode", colorCode);
+		tagCompound.setInteger("CyanDye", cyanDye);
+		tagCompound.setInteger("MagentaDye", magentaDye);
+		tagCompound.setInteger("YellowDye", yellowDye);
+		tagCompound.setInteger("BlackDye", blackDye);
+		tagCompound.setBoolean("Colorizing", colorizing);
+		tagCompound.setTag("Inventory", items.serializeNBT());
+		return super.writeToNBT(tagCompound);
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		tagCompound.setString("colorCode", colorCode);
-		tagCompound.setBoolean("colorizing", colorizing);
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(pos, 1, getUpdateTag());
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager netManager, SPacketUpdateTileEntity packet) {
+		handleUpdateTag(packet.getNbtCompound());
+	}
+
+	@Override
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound tagCompound = super.getUpdateTag();
+		tagCompound.setString("ColorCode", colorCode);
+		tagCompound.setBoolean("Colorizing", colorizing);
 		for (int i = 0; i < 2; i++) {
-			NBTTagCompound tag = new NBTTagCompound();
-			if (inv[i] != null) {
-				inv[i].writeToNBT(tag);
-			} else
-				tag.setShort("id", (short)0);
-			tagCompound.setTag(i == 0 ? "input" : "output", tag);
+			ItemStack itemStack = items.getStackInSlot(i);
+			if (!itemStack.isEmpty()) {
+				NBTTagCompound tag = new NBTTagCompound();
+				itemStack.writeToNBT(tag);
+				tagCompound.setTag(i == 0 ? "Input" : "Output", tag);
+			}
 		}
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, tagCompound);
+		return tagCompound;
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager network, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
-		colorCode = tagCompound.getString("colorCode");
-		colorizing = tagCompound.getBoolean("colorizing");
-		NBTTagCompound tag = tagCompound.getCompoundTag("input");
-		if (tag.getShort("id") != 0)
-			inv[0] = ItemStack.loadItemStackFromNBT(tag);
-		else
-			inv[0] = null;
-		tag = tagCompound.getCompoundTag("output");
-		if (tag.getShort("id") != 0)
-			inv[1] = ItemStack.loadItemStackFromNBT(tag);
-		else
-			inv[1] = null;
+	public void handleUpdateTag(NBTTagCompound tag) {
+		colorCode = tag.getString("ColorCode");
+		colorizing = tag.getBoolean("Colorizing");
+		if (tag.hasKey("Input"))
+			items.setStackInSlot(0, new ItemStack(tag.getCompoundTag("Input")));
+		if (tag.hasKey("Output"))
+			items.setStackInSlot(1, new ItemStack(tag.getCompoundTag("Output")));
 	}
-
-	// *** Begin ComputerCraft Integration *** //
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public String getType() {
-		return "wool_colorizer";
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public String[] getMethodNames() {
-		return new String[]{"getHexCode", "setHexCode", "getCyanDye", "getMagentaDye", "getYellowDye", "getBlackDye"};
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
-		switch (method) {
-			case 0:
-				return new Object[]{colorCode};
-			case 1:
-				if (arguments.length < 1)
-					throw new LuaException("Not enough arguments");
-				if (arguments[0].toString().length() != 6)
-					throw new LuaException("Invalid hex code");
-				try {
-					Integer.parseInt(arguments[0].toString(), 16);
-				} catch (NumberFormatException ex) {
-					throw new LuaException("Invalid hex code");
-				}
-				colorCode = arguments[0].toString();
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				break;
-			case 2:
-				return new Object[]{cyanDye};
-			case 3:
-				return new Object[]{magentaDye};
-			case 4:
-				return new Object[]{yellowDye};
-			case 5:
-				return new Object[]{blackDye};
-		}
-		return null;
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public void attach(IComputerAccess computer) {
-		// whatever
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public void detach(IComputerAccess computer) {
-		// whatever
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public boolean equals(IPeripheral other) {
-		return other == this;
-	}
-	// *** End ComputerCraft Integration *** //
 }

@@ -26,3 +26,14 @@ run
 
 # other project things
 libs
+
+# IntelliJ
+out/
+.idea/
+generated/
+*.iml
+*.ipr
+*.iws
+
+# Misc
+.directory
