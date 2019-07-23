@@ -2,6 +2,7 @@ package com.techjar.hexwool.gui;
 
 import java.io.IOException;
 
+import com.techjar.hexwool.Config;
 import com.techjar.hexwool.block.HexWoolBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiButton;
@@ -121,7 +122,7 @@ public class GuiWoolColorizer extends GuiContainer {
 				int color = -1;
 				if (!this.hexField.getText().toLowerCase().equals("easter"))
 					color = Integer.parseInt(this.hexField.getText(), 16);
-				this.colorizeBtn.enabled = Util.canColorizeItem(itemStack, color) && (tile.hasRequiredDyes(color) || true);
+				this.colorizeBtn.enabled = Util.canColorizeItem(itemStack, color) && (tile.hasRequiredDyes(color) || Config.creative);
 			} catch (NumberFormatException ex) {
 				this.colorizeBtn.enabled = false;
 			}
