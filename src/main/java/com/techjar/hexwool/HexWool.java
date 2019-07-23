@@ -15,7 +15,7 @@ import com.techjar.hexwool.network.HexWoolChannelHandler;
 import com.techjar.hexwool.proxy.ProxyCommon;
 
 @SuppressWarnings("unused")
-@Mod(modid = HexWool.ID, name = HexWool.NAME, version = HexWool.VERSION, /*dependencies = "required-after:Forge@[14.23.5.2768,)",*/ acceptableRemoteVersions = "[@RAW_VERSION@,)")
+@Mod(modid = HexWool.ID, name = HexWool.NAME, version = HexWool.VERSION) // dependencies = "required-after:Forge@[14.23.5.2768,)"
 public class HexWool {
 	public static final String ID = "hexwool";
 	public static final String NAME = "HexWool";
