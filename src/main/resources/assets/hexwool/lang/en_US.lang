@@ -5,3 +5,7 @@ hexwool.string.colorText=Color
 // Blocks
 tile.hexwool.block.woolColorizer.name=Wool Colorizer
 tile.hexwool.block.coloredWool.name=Colored Wool
+tile.hexwool.block.coloredGlass.name=Colored Glass
+tile.hexwool.block.coloredConcrete.name=Colored Concrete
+tile.hexwool.block.coloredTerracotta.name=Colored Terracotta
+tile.hexwool.block.coloredGlassPane.name=Colored Glass Pane

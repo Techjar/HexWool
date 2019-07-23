@@ -1,0 +1,12 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "all": "blocks/hardened_clay_stained_white"
+    },
+    "model": "hexwool:colored_cube"
+  },
+  "variants": {
+    "normal": [{}]
+  }
+}

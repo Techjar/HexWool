@@ -40,7 +40,7 @@ public class BlockWoolColorizer extends Block {
 	public BlockWoolColorizer() {
 		super(Material.IRON);
 		this.setSoundType(SoundType.METAL);
-		this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		this.setCreativeTab(CreativeTabs.DECORATIONS);
 	}
 
 	@Override

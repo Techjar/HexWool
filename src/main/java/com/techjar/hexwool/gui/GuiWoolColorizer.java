@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.techjar.hexwool.Config;
 import com.techjar.hexwool.block.HexWoolBlocks;
+import com.techjar.hexwool.util.ColorHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -58,13 +59,13 @@ public class GuiWoolColorizer extends GuiContainer {
 		mc.fontRenderer.drawString(HexWoolBlocks.WOOL_COLORIZER.getLocalizedName(), 8, 6, 4210752);
 		TileEntityWoolColorizer tile = this.tileEntity;
 		if (tile.cyanDye > 0)
-			drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, Util.rgbaToColor(0, 255, 255, 255));
+			drawRect(9, 43, 9 + (int)(14 * (tile.cyanDye / 1000.0F)), 45, ColorHelper.rgbaToColor(0, 255, 255, 255));
 		if (tile.magentaDye > 0)
-			drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, Util.rgbaToColor(255, 0, 255, 255));
+			drawRect(27, 43, 27 + (int)(14 * (tile.magentaDye / 1000.0F)), 45, ColorHelper.rgbaToColor(255, 0, 255, 255));
 		if (tile.yellowDye > 0)
-			drawRect(45, 43, 45 + (int)(14 * (tile.yellowDye / 1000.0F)), 45, Util.rgbaToColor(255, 255, 0, 255));
+			drawRect(45, 43, 45 + (int)(14 * (tile.yellowDye / 1000.0F)), 45, ColorHelper.rgbaToColor(255, 255, 0, 255));
 		if (tile.blackDye > 0)
-			drawRect(63, 43, 63 + (int)(14 * (tile.blackDye / 1000.0F)), 45, Util.rgbaToColor(0, 0, 0, 255));
+			drawRect(63, 43, 63 + (int)(14 * (tile.blackDye / 1000.0F)), 45, ColorHelper.rgbaToColor(0, 0, 0, 255));
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class GuiWoolColorizer extends GuiContainer {
 				int color = -1;
 				if (!this.hexField.getText().toLowerCase().equals("easter"))
 					color = Integer.parseInt(this.hexField.getText(), 16);
-				this.colorizeBtn.enabled = Util.canColorizeItem(itemStack, color) && (tile.hasRequiredDyes(color) || Config.creative);
+				this.colorizeBtn.enabled = ColorHelper.canColorizeItem(itemStack, color) && (tile.hasRequiredDyes(color) || Config.creative);
 			} catch (NumberFormatException ex) {
 				this.colorizeBtn.enabled = false;
 			}

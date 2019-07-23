@@ -3,7 +3,7 @@ package com.techjar.hexwool.tileentity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public class TileEntityColoredWool extends TileEntity {
+public class TileEntityRGBColored extends TileEntity {
 	public int color = 0xFFFFFF;
 	
 	@Override

@@ -2,6 +2,7 @@ package com.techjar.hexwool.container;
 
 import javax.annotation.Nonnull;
 
+import com.techjar.hexwool.util.ColorHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -135,7 +136,7 @@ public class ContainerWoolColorizer extends Container {
 				if (!this.mergeItemStack(stackInSlot, 6, 42, true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (Util.canColorizeItem(stackInSlot, 0)) {
+			} else if (ColorHelper.canColorizeItem(stackInSlot, 0xFFFFFF)) {
 				if (!this.mergeItemStack(stackInSlot, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

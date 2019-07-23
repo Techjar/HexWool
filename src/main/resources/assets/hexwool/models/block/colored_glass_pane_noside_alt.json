@@ -1,0 +1,6 @@
+{
+    "parent": "hexwool:block/colored_pane_noside_alt",
+    "textures": {
+        "pane": "blocks/glass_white"
+    }
+}

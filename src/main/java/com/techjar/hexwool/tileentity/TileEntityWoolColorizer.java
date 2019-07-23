@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.techjar.hexwool.util.ColorHelper;
 import com.techjar.hexwool.util.ItemStackHandlerWrapper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 
 import com.techjar.hexwool.Config;
 import com.techjar.hexwool.util.Util;
-import com.techjar.hexwool.util.Util.CMYKColor;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -51,7 +51,7 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
 			switch (slot) {
 				case 0:
-					return Util.canColorizeItem(stack, 0);
+					return ColorHelper.canColorizeItem(stack, 0xFFFFFF);
 				case 2:
 					return Util.itemMatchesOre(stack, "dyeCyan");
 				case 3:
@@ -81,8 +81,8 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 		final ItemStack inputStack = items.getStackInSlot(0);
 		final ItemStack outputStack = items.getStackInSlot(1);
 		if (!Config.creative) {
-			if (!inputStack.isEmpty() && hasRequiredDyes(color) && Util.canColorizeItem(inputStack, color)) {
-				if (Util.getItemHasColor(inputStack) && Util.getItemColor(inputStack) == color) {
+			if (!inputStack.isEmpty() && hasRequiredDyes(color) && ColorHelper.canColorizeItem(inputStack, color)) {
+				if (ColorHelper.getItemHasColor(inputStack) && ColorHelper.getItemColor(inputStack) == color) {
 					if (outputStack.isEmpty()) {
 						items.setStackInSlot(1, inputStack.copy());
 						items.setStackInSlot(0, ItemStack.EMPTY);
@@ -91,7 +91,7 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 					} else {
 						int maxStack = outputStack.getMaxStackSize();
 						if (outputStack.getCount() < maxStack) {
-							ItemStack resultStack = Util.colorizeItem(inputStack, color);
+							ItemStack resultStack = ColorHelper.colorizeItem(inputStack, color);
 
 							if (resultStack.isItemEqual(outputStack) && ItemStack.areItemStackTagsEqual(resultStack, outputStack)) {
 								int amountMade;
@@ -115,9 +115,9 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 				if (!outputStack.isEmpty()) {
 					int maxStack = outputStack.getMaxStackSize();
 					if (outputStack.getCount() < maxStack) {
-						ItemStack resultStack = Util.colorizeItem(inputStack, color);
+						ItemStack resultStack = ColorHelper.colorizeItem(inputStack, color);
 
-						if (Util.getItemHasColor(outputStack) && Util.getItemColor(outputStack) == color) {
+						if (ColorHelper.getItemHasColor(outputStack) && ColorHelper.getItemColor(outputStack) == color) {
 							if (resultStack.getCount() + outputStack.getCount() > maxStack) {
 								amountMade = maxStack - outputStack.getCount();
 							} else {
@@ -147,7 +147,7 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 						if (!hiddenStack.isEmpty())
 							items.setStackInSlot(6, Util.growItemStack(hiddenStack, 1));
 						else {
-							ItemStack itemStack = Util.colorizeItem(inputStack, color);
+							ItemStack itemStack = ColorHelper.colorizeItem(inputStack, color);
 							itemStack.setCount(1);
 							items.setStackInSlot(6, itemStack);
 						}
@@ -159,16 +159,16 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 				}
 			}
 		} else {
-			if (!inputStack.isEmpty() && Util.canColorizeItem(inputStack, color)) {
+			if (!inputStack.isEmpty() && ColorHelper.canColorizeItem(inputStack, color)) {
 				if (outputStack.isEmpty()) {
-					items.setStackInSlot(1, Util.colorizeItem(inputStack, color));
+					items.setStackInSlot(1, ColorHelper.colorizeItem(inputStack, color));
 					items.setStackInSlot(0, ItemStack.EMPTY);
 					this.markDirtyAndSync();
 					return true;
 				} else {
 					int maxStack = outputStack.getMaxStackSize();
 					if (outputStack.getCount() < maxStack) {
-						ItemStack resultStack = Util.colorizeItem(inputStack, color);
+						ItemStack resultStack = ColorHelper.colorizeItem(inputStack, color);
 
 						if (resultStack.isItemEqual(outputStack) && ItemStack.areItemStackTagsEqual(resultStack, outputStack)) {
 							int amountMade;
@@ -203,7 +203,7 @@ public class TileEntityWoolColorizer extends TileEntity implements ITickable {
 				arr[i] = (int)(random.nextFloat() * Config.dyePerWool);
 			return arr;
 		}
-		CMYKColor cmyk = Util.colorToCmyk(color);
+		ColorHelper.CMYKColor cmyk = ColorHelper.colorToCmyk(color);
 		arr[0] = (int)(cmyk.getCyan() * Config.dyePerWool);
 		arr[1] = (int)(cmyk.getMagenta() * Config.dyePerWool);
 		arr[2] = (int)(cmyk.getYellow() * Config.dyePerWool);
