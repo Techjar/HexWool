@@ -38,21 +38,30 @@ public class BlockColoredWool extends Block {
 		return itemStack;
 	}
 
-	/*@Override
-	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-		if (!player.capabilities.isCreativeMode)
-			dropBlockAsItem(worldIn, pos, state, 0);
-	}*/
+	@Override
+	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity tile, ItemStack stack) {
+		if (tile instanceof TileEntityColoredWool) {
+			ItemStack itemStack = new ItemStack(this, 1);
+			itemStack.setTagCompound(new NBTTagCompound());
+			itemStack.getTagCompound().setInteger("Color", ((TileEntityColoredWool)tile).color);
+
+			spawnAsEntity(worldIn, pos, itemStack);
+		} else {
+			super.harvestBlock(worldIn, player, pos, state, tile, stack);
+		}
+	}
 
 	@Override
 	public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 		ItemStack itemStack = new ItemStack(this, 1);
+
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof TileEntityColoredWool) {
 			itemStack.setTagCompound(new NBTTagCompound());
 			itemStack.getTagCompound().setInteger("Color", ((TileEntityColoredWool)tile).color);
-			drops.add(itemStack);
 		}
+
+		drops.add(itemStack);
 	}
 
 	@Override
