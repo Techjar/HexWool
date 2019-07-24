@@ -30,7 +30,8 @@ public final class RegistryHandler {
 				HexWoolBlocks.COLORED_GLASS,
 				HexWoolBlocks.COLORED_CONCRETE,
 				HexWoolBlocks.COLORED_TERRACOTTA,
-				HexWoolBlocks.COLORED_GLASS_PANE
+				HexWoolBlocks.COLORED_GLASS_PANE,
+				HexWoolBlocks.COLORED_CARPET
 		);
 		Blocks.FIRE.setFireInfo(HexWoolBlocks.COLORED_WOOL, 30, 60);
 	}
@@ -43,6 +44,7 @@ public final class RegistryHandler {
 		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_CONCRETE);
 		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_TERRACOTTA);
 		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_GLASS_PANE);
+		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_CARPET);
 	}
 
 	private void registerColoredItemBlock(IForgeRegistry<Item> registry, Block block) {
@@ -59,6 +61,7 @@ public final class RegistryHandler {
 		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_CONCRETE);
 		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_TERRACOTTA);
 		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_GLASS_PANE);
+		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_CARPET);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -71,6 +74,7 @@ public final class RegistryHandler {
 		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_CONCRETE);
 		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_TERRACOTTA);
 		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_GLASS_PANE);
+		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_CARPET);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -82,6 +86,7 @@ public final class RegistryHandler {
 		registerItemBlockModel(HexWoolBlocks.COLORED_CONCRETE);
 		registerItemBlockModel(HexWoolBlocks.COLORED_TERRACOTTA);
 		registerItemBlockModel(HexWoolBlocks.COLORED_GLASS_PANE);
+		registerItemBlockModel(HexWoolBlocks.COLORED_CARPET);
 	}
 
 	@SideOnly(Side.CLIENT)

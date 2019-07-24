@@ -12,4 +12,5 @@ public class HexWoolBlocks {
 	public static final Block COLORED_CONCRETE = new BlockRGBColored(Material.ROCK, SoundType.STONE).setHardness(1.8F).setRegistryName(HexWool.ID, "colored_concrete").setTranslationKey("hexwool.block.coloredConcrete");
 	public static final Block COLORED_TERRACOTTA = new BlockRGBColored(Material.ROCK, SoundType.STONE).setHardness(1.25F).setResistance(7.0F).setRegistryName(HexWool.ID, "colored_terracotta").setTranslationKey("hexwool.block.coloredTerracotta");
 	public static final Block COLORED_GLASS_PANE = new BlockRGBColoredGlassPane(Material.GLASS, SoundType.GLASS).setHardness(0.3F).setRegistryName(HexWool.ID, "colored_glass_pane").setTranslationKey("hexwool.block.coloredGlassPane");
+	public static final Block COLORED_CARPET = new BlockRGBColoredCarpet(Material.CLOTH, SoundType.CLOTH).setHardness(0.1F).setRegistryName(HexWool.ID, "colored_carpet").setTranslationKey("hexwool.block.coloredCarpet");
 }

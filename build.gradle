@@ -36,6 +36,10 @@ minecraft {
     project.version = project.minecraft.version + "-" + project.version
 }
 
+jar {
+    exclude "**/*.psd"
+}
+
 repositories {
      maven { // The repo from which to get waila
          name "TehNut Repo"
@@ -77,6 +81,5 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
-		exclude '*.psd'
     }
 }

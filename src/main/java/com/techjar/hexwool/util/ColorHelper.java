@@ -60,6 +60,7 @@ public class ColorHelper {
 				.put(Blocks.HARDENED_CLAY, new BlockColorizer(HexWoolBlocks.COLORED_TERRACOTTA))
 				.put(Blocks.STAINED_HARDENED_CLAY, new BlockColorizer(HexWoolBlocks.COLORED_TERRACOTTA))
 				.put("paneGlass", new BlockColorizer(HexWoolBlocks.COLORED_GLASS_PANE))
+				.put(Blocks.CARPET, new BlockColorizer(HexWoolBlocks.COLORED_CARPET))
 				.build();
 	}
 
