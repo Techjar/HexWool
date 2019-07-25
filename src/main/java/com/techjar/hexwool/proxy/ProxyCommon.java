@@ -22,6 +22,7 @@ public class ProxyCommon {
 	public void registerOres() {
 		OreDictionary.registerOre("wool", HexWoolBlocks.COLORED_WOOL);
 		OreDictionary.registerOre("blockGlass", HexWoolBlocks.COLORED_GLASS);
+		OreDictionary.registerOre("paneGlass", HexWoolBlocks.COLORED_GLASS_PANE);
 	}
 
 	public void registerRenderers() {
