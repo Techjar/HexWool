@@ -170,6 +170,104 @@ public class ColorHelper {
 		return rgbToCmyk((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
 	}
 
+	/**
+	 * HSB to RGB conversion, pinched from java.awt.Color.
+	 * @param hue (0..1.0f)
+	 * @param saturation (0..1.0f)
+	 * @param brightness (0..1.0f)
+	 */
+	public static RGBColor hsbToRgb(float hue, float saturation, float brightness) {
+		RGBColor color = new RGBColor(0, 0, 0);
+		if (saturation == 0.0F) {
+			color.r = color.g = color.b = (int)(brightness * 255f + 0.5f);
+		} else {
+			float f3 = (hue - (float) Math.floor(hue)) * 6F;
+			float f4 = f3 - (float) Math.floor(f3);
+			float f5 = brightness * (1.0F - saturation);
+			float f6 = brightness * (1.0F - saturation * f4);
+			float f7 = brightness * (1.0F - saturation * (1.0F - f4));
+			switch ((int) f3) {
+				case 0 :
+					color.r = (int)(brightness * 255f + 0.5f);
+					color.g = (int)(f7 * 255f + 0.5f);
+					color.b = (int)(f5 * 255f + 0.5f);
+					break;
+				case 1 :
+					color.r = (int)(f6 * 255f + 0.5f);
+					color.g = (int)(brightness * 255f + 0.5f);
+					color.b = (int)(f5 * 255f + 0.5f);
+					break;
+				case 2 :
+					color.r = (int)(f5 * 255f + 0.5f);
+					color.g = (int)(brightness * 255f + 0.5f);
+					color.b = (int)(f7 * 255f + 0.5f);
+					break;
+				case 3 :
+					color.r = (int)(f5 * 255f + 0.5f);
+					color.g = (int)(f6 * 255f + 0.5f);
+					color.b = (int)(brightness * 255f + 0.5f);
+					break;
+				case 4 :
+					color.r = (int)(f7 * 255f + 0.5f);
+					color.g = (int)(f5 * 255f + 0.5f);
+					color.b = (int)(brightness * 255f + 0.5f);
+					break;
+				case 5 :
+					color.r = (int)(brightness * 255f + 0.5f);
+					color.g = (int)(f5 * 255f + 0.5f);
+					color.b = (int)(f6 * 255f + 0.5f);
+					break;
+			}
+		}
+		return color;
+	}
+	/**
+	 * RGB to HSB conversion, pinched from java.awt.Color.
+	 * @param r (0..255)
+	 * @param g (0..255)
+	 * @param b (0..255)
+	 */
+	public static float[] rgbToHsb(int r, int g, int b) {
+		float[] dest = new float[3];
+		int l = r <= g ? g : r;
+		if (b > l)
+			l = b;
+		int i1 = r >= g ? g : r;
+		if (b < i1)
+			i1 = b;
+		float brightness = l / 255F;
+		float saturation;
+		if (l != 0)
+			saturation = (float) (l - i1) / (float) l;
+		else
+			saturation = 0.0F;
+		float hue;
+		if (saturation == 0.0F) {
+			hue = 0.0F;
+		} else {
+			float f3 = (float) (l - r) / (float) (l - i1);
+			float f4 = (float) (l - g) / (float) (l - i1);
+			float f5 = (float) (l - b) / (float) (l - i1);
+			if (r == l)
+				hue = f5 - f4;
+			else if (g == l)
+				hue = (2.0F + f3) - f5;
+			else
+				hue = (4F + f4) - f3;
+			hue /= 6F;
+			if (hue < 0.0F)
+				hue++;
+		}
+		dest[0] = hue;
+		dest[1] = saturation;
+		dest[2] = brightness;
+		return dest;
+	}
+
+	public static float[] rgbToHsb(RGBColor color) {
+		return rgbToHsb(color.r, color.g, color.b);
+	}
+
 	public static class RGBColor {
 		private int r, g, b;
 
