@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -42,6 +43,7 @@ public class RenderTileEntityWoolColorizer extends TileEntitySpecialRenderer<Til
 
 		int light = tile.getWorld().getCombinedLight(tile.getPos().up(), 0);
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light % 65536, light / 65536);
+		RenderHelper.disableStandardItemLighting();
 
 		if (tile.colorCode.length() == 6) {
 			try {
@@ -64,6 +66,7 @@ public class RenderTileEntityWoolColorizer extends TileEntitySpecialRenderer<Til
 			}
 		}
 
+		RenderHelper.enableStandardItemLighting();
 		IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		ItemStack itemStack = !itemHandler.getStackInSlot(0).isEmpty() ? itemHandler.getStackInSlot(0) : itemHandler.getStackInSlot(1);
 		if (!itemStack.isEmpty()) {
