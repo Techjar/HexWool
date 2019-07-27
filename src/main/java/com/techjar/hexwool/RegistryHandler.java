@@ -1,5 +1,8 @@
 package com.techjar.hexwool;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 import com.techjar.hexwool.block.HexWoolBlocks;
 import com.techjar.hexwool.client.render.colors.BlockColorHandler;
 import com.techjar.hexwool.client.render.colors.ItemColorHandler;
@@ -24,27 +27,16 @@ import net.minecraftforge.registries.IForgeRegistry;
 public final class RegistryHandler {
 	@SubscribeEvent
 	public void registerBlocks(RegistryEvent.Register<Block> event) {
-		event.getRegistry().registerAll(
-				HexWoolBlocks.WOOL_COLORIZER,
-				HexWoolBlocks.COLORED_WOOL,
-				HexWoolBlocks.COLORED_GLASS,
-				HexWoolBlocks.COLORED_CONCRETE,
-				HexWoolBlocks.COLORED_TERRACOTTA,
-				HexWoolBlocks.COLORED_GLASS_PANE,
-				HexWoolBlocks.COLORED_CARPET
-		);
+		event.getRegistry().register(HexWoolBlocks.WOOL_COLORIZER);
+		event.getRegistry().registerAll(getColoredBlocks());
 		Blocks.FIRE.setFireInfo(HexWoolBlocks.COLORED_WOOL, 30, 60);
 	}
 
 	@SubscribeEvent
 	public void registerItems(RegistryEvent.Register<Item> event) {
 		event.getRegistry().register(new ItemBlock(HexWoolBlocks.WOOL_COLORIZER).setRegistryName(HexWoolBlocks.WOOL_COLORIZER.getRegistryName()));
-		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_WOOL);
-		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_GLASS);
-		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_CONCRETE);
-		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_TERRACOTTA);
-		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_GLASS_PANE);
-		registerColoredItemBlock(event.getRegistry(), HexWoolBlocks.COLORED_CARPET);
+		for (Block block : getColoredBlocks())
+			registerColoredItemBlock(event.getRegistry(), block);
 	}
 
 	private void registerColoredItemBlock(IForgeRegistry<Item> registry, Block block) {
@@ -56,12 +48,8 @@ public final class RegistryHandler {
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
 		BlockColors blockColors = event.getBlockColors();
 		BlockColorHandler colorHandler = new BlockColorHandler();
-		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_WOOL);
-		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_GLASS);
-		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_CONCRETE);
-		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_TERRACOTTA);
-		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_GLASS_PANE);
-		blockColors.registerBlockColorHandler(colorHandler, HexWoolBlocks.COLORED_CARPET);
+		for (Block block : getColoredBlocks())
+			blockColors.registerBlockColorHandler(colorHandler, block);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -69,28 +57,34 @@ public final class RegistryHandler {
 	public void registerBlockColors(ColorHandlerEvent.Item event) {
 		ItemColors itemColors = event.getItemColors();
 		ItemColorHandler colorHandler = new ItemColorHandler();
-		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_WOOL);
-		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_GLASS);
-		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_CONCRETE);
-		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_TERRACOTTA);
-		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_GLASS_PANE);
-		itemColors.registerItemColorHandler(colorHandler, HexWoolBlocks.COLORED_CARPET);
+		for (Block block : getColoredBlocks())
+			itemColors.registerItemColorHandler(colorHandler, block);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		registerItemBlockModel(HexWoolBlocks.WOOL_COLORIZER);
-		registerItemBlockModel(HexWoolBlocks.COLORED_WOOL);
-		registerItemBlockModel(HexWoolBlocks.COLORED_GLASS);
-		registerItemBlockModel(HexWoolBlocks.COLORED_CONCRETE);
-		registerItemBlockModel(HexWoolBlocks.COLORED_TERRACOTTA);
-		registerItemBlockModel(HexWoolBlocks.COLORED_GLASS_PANE);
-		registerItemBlockModel(HexWoolBlocks.COLORED_CARPET);
+		for (Block block : getColoredBlocks())
+			registerItemBlockModel(block);
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void registerItemBlockModel(Block block) {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation(block.getRegistryName(), null));
+	}
+
+	private Block[] getColoredBlocks() {
+		ArrayList<Block> list = new ArrayList<>();
+		try {
+			for (Field f : HexWoolBlocks.class.getFields()) {
+				if (f.getName().startsWith("COLORED_"))
+					list.add((Block)f.get(null));
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+
+		return list.toArray(new Block[0]);
 	}
 }
