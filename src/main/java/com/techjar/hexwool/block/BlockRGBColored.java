@@ -82,6 +82,7 @@ public class BlockRGBColored extends Block implements IColorizable {
 			TileEntity tile = worldIn.getTileEntity(pos);
 			if (tile instanceof TileEntityRGBColored) {
 				((TileEntityRGBColored)tile).color = stack.getTagCompound().getInteger("Color");
+				worldIn.notifyBlockUpdate(pos, state, state, 2);
 			}
 		}
 	}
